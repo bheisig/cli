@@ -1,0 +1,568 @@
+<?php
+
+/**
+ * Copyright (C) 2018 Benjamin Heisig
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author Benjamin Heisig <https://benjamin.heisig.name/>
+ * @copyright Copyright (C) 2018 Benjamin Heisig
+ * @license http://www.gnu.org/licenses/agpl-3.0 GNU Affero General Public License (AGPL)
+ * @link https://github.com/bheisig/cli
+ */
+
+namespace bheisig\cli;
+
+/**
+ * CLI application
+ */
+class App {
+
+    /**
+     * Options: Option has no value.
+     *
+     * @var int
+     */
+    const NO_VALUE = 0;
+
+    /**
+     * Options: Option is required.
+     *
+     * @var int
+     */
+    const VALUE_REQUIRED = 1;
+
+    /**
+     * Options: Option is optional.
+     *
+     * @var int
+     */
+    const VALUE_OPTIONAL = 2;
+
+    /**
+     * Configuration settings as key-value store
+     *
+     * @var array Associative array
+     */
+    protected $config = [];
+
+    /**
+     * Short options
+     *
+     * @var array
+     */
+    protected $shortOptions = [];
+
+    /**
+     * Long options
+     *
+     * @var array
+     */
+    protected $longOptions = [];
+
+    /**
+     * Logger
+     *
+     * @var \bheisig\cli\Log
+     */
+    protected $log;
+
+    /**
+     * Constructor
+     *
+     * Add pre-defined commands "help" and "list" and pre-defined options "-c"/"--config", "-h"/"--help", "--no-colors",
+     * "-q"/"--quiet", "-v"/"--verbose" and "version"
+     *
+     * Initialize logger with default values
+     *
+     * @throws \Exception on error
+     */
+    public function __construct() {
+        $this
+            ->addCommand('help', '\\bheisig\\cli\\Help', 'Show this help')
+            ->addCommand('list', '\\bheisig\\cli\\ListCommands', 'List all commands')
+            ->addOption('c', 'config', self::VALUE_REQUIRED)
+            ->addOption('h', 'help', self::NO_VALUE)
+            ->addOption(null, 'no-colors', self::NO_VALUE)
+            ->addOption('q', 'quiet', self::NO_VALUE)
+            ->addOption('v', 'verbose', self::NO_VALUE)
+            ->addOption(null, 'version', self::NO_VALUE);
+
+        $this->config['log'] = [
+            'colorize' => true,
+            'verbosity' => LOG::ALL
+        ];
+
+        $this->log = new Log();
+    }
+
+    /**
+     * Parse a JSON file and add its content to the configuration settings
+     *
+     * @param string $file File path
+     * @param bool $force If "true" and file is not readable ignore it, otherwise throw an exception. Defaults to
+     * "false".
+     *
+     * @return self Returns itself
+     *
+     * @throws \Exception on error
+     */
+    public function addConfigFile($file, $force = false) {
+        $settings = $this->parseJSONFile($file, $force);
+
+        if (is_array($settings)) {
+            $this->addConfigSettings($settings);
+        } else {
+            throw new \Exception(sprintf(
+                'Unable to parse configuration file "%s" because content is of type "%s"',
+                $file,
+                gettype($settings)
+            ));
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add configuration settings
+     *
+     * @param array $settings Configuration settings
+     *
+     * @return self Returns itself
+     */
+    public function addConfigSettings(array $settings) {
+        $this->config = $this->array_merge_recursive_overwrite(
+            $this->config,
+            $settings
+        );
+
+        return $this;
+    }
+
+    /**
+     * Get configuration settings
+     *
+     * @return array
+     */
+    public function getConfigSettings() {
+        return $this->config;
+    }
+
+    /**
+     * Add a command
+     *
+     * @param string $title
+     * @param string $class Class name incl. namespace
+     * @param string $description Description
+     *
+     * @return self Returns itself
+     */
+    public function addCommand($title, $class, $description) {
+        $this->config['commands'][$title] = [
+            'class' => $class,
+            'description' => $description
+        ];
+
+        return $this;
+    }
+
+    /**
+     * Add an option
+     *
+     * @param string $short One optional character
+     * @param string $long Two or more optional characters
+     * @param int $value Has this option a value? Is it required?
+     *
+     * @return self Returns itself
+     *
+     * @throws \Exception on error
+     */
+    public function addOption($short = null, $long = null, $value = self::NO_VALUE) {
+        switch ($value) {
+            case self::NO_VALUE:
+            case self::VALUE_REQUIRED:
+            case self::VALUE_OPTIONAL:
+                break;
+            default:
+                throw new \Exception(
+                    'Invalid value'
+                );
+        }
+
+        if (isset($short)) {
+            if (!is_string($short) || strlen($short) !== 1) {
+                throw new \Exception(sprintf(
+                    'Bad short option "%s"',
+                    $short
+                ));
+            }
+
+            $this->shortOptions[$short] = $value;
+        }
+
+        if (isset($long)) {
+            if (!is_string($long) || strlen($long) < 2) {
+                throw new \Exception(sprintf(
+                    'Bad long option "%s"',
+                    $long
+                ));
+            }
+
+            $this->longOptions[$long] = $value;
+        }
+
+
+
+        return $this;
+    }
+
+    /**
+     * Run the application
+     *
+     * @throws \Exception on error
+     */
+    public function run() {
+        try {
+            $this
+                ->loadComposerFile()
+                ->loadArgs()
+                ->parseOptions()
+                ->loadAdditionalConfigFiles()
+                ->configureLogger();
+
+            /**
+             * Try to find out what the user wants:
+             */
+
+            $this->showVersion();
+
+            $this->runCommand();
+
+            $this->showHelp();
+
+            /**
+             * Ooops, went to far…
+             */
+
+            throw new \Exception('Bad request', 400);
+        } catch (\Exception $e) {
+            $this->log->fatal($e->getMessage());
+
+            if ($e->getCode() === 400) {
+                $class = $this->config['commands']['help']['class'];
+                /** @var Executes $help */
+                $help = new $class($this->config, $this->log);
+                $help->setup()->execute()->tearDown();
+            }
+
+            exit(1);
+        }
+    }
+
+    /**
+     * Parse given options
+     *
+     * @return self Returns itself
+     *
+     * @throws \Exception on error
+     */
+    protected function parseOptions() {
+        $this->config['options'] = [];
+
+        $allOptions = [
+            '-' => $this->shortOptions,
+            '--' => $this->longOptions
+        ];
+
+        foreach ($allOptions as $prefix => $options) {
+            foreach ($options as $option => $valueSetting) {
+                $key = $prefix . $option;
+                $value = null;
+
+                for ($i = 1; $i < count($this->config['args']); $i++) {
+                    if (strpos($this->config['args'][$i], $key, 0) === 0) {
+                        switch ($valueSetting) {
+                            case self::NO_VALUE:
+                                $value = true;
+                                break;
+                            case self::VALUE_REQUIRED:
+                                if (strpos($this->config['args'][$i], $key . '=', 0) === 0) {
+                                    $value = str_replace(
+                                        $key . '=',
+                                        '',
+                                        $this->config['args'][$i]
+                                    );
+                                } else if (array_key_exists(($i + 1), $this->config['args']) &&
+                                    strpos($this->config['args'][$i + 1], '-', 0) === false) {
+                                    $value = $this->config['args'][$i + 1];
+                                } else {
+                                    throw new \Exception(sprintf(
+                                        'Option "%s" needs a value',
+                                        $key
+                                    ));
+                                }
+                                break;
+                            case self::VALUE_OPTIONAL:
+                                break;
+                        }
+
+                        if (array_key_exists($option, $this->config['options']) &&
+                            !is_array($this->config['options'][$option])) {
+                            $this->config['options'][$option] = [
+                                $this->config['options'][$option],
+                                $value
+                            ];
+                        } else if (array_key_exists($option, $this->config['options']) &&
+                            is_array($this->config['options'][$option])) {
+                            $this->config['options'][$option][] = $value;
+                        } else {
+                            $this->config['options'][$option] = $value;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get all arguments from command-line
+     *
+     * @return self Returns itself
+     *
+     * @throws \Exception on error
+     */
+    protected function loadArgs() {
+        $this->config['args'] = $GLOBALS['argv'];
+
+        if (count($this->config['args']) < 2) {
+            throw new \Exception('Too few arguments', 400);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Parse additional configuration files given as options
+     *
+     * @return self Returns itself
+     *
+     * @throws \Exception on error
+     */
+    protected function loadAdditionalConfigFiles() {
+        $additionalConfigFiles = [];
+
+        foreach ($this->config['options'] as $option => $value) {
+            if (in_array($option, ['c', 'config'])) {
+                switch(gettype($value)) {
+                    case 'string':
+                        $additionalConfigFiles[] = $value;
+                        break;
+                    case 'array':
+                        foreach ($value as $item) {
+                            if (!is_string($item)) {
+                                throw new \Exception(sprintf(
+                                    'Unknown value "%s" for option "%s"',
+                                    $item,
+                                    $option
+                                ));
+                            }
+
+                            $additionalConfigFiles[] = $item;
+                        }
+                        break;
+                    default:
+                        throw new \Exception(sprintf(
+                            'Unknown value "%s" for option "%s"',
+                            $value,
+                            $option
+                        ));
+                }
+            }
+        }
+
+        foreach ($additionalConfigFiles as $additionalConfigFile) {
+            $this->addConfigFile($additionalConfigFile);
+        }
+
+        return $this;
+    }
+
+    protected function configureLogger() {
+        if (array_key_exists('no-colors', $this->config['options'])) {
+            $this->config['log']['colorize'] = false;
+        }
+
+        $this->log->printColors($this->config['log']['colorize']);
+
+        if (array_key_exists('q', $this->config['options']) ||
+            array_key_exists('quiet', $this->config['options'])) {
+            $this->config['log']['verbosity'] = Log::FATAL | Log::ERROR;
+        } else if (array_key_exists('v', $this->config['options']) ||
+            array_key_exists('verbose', $this->config['options'])) {
+            $this->config['log']['verbosity'] = Log::ALL;
+        }
+
+        $this->log->setVerbosity($this->config['log']['verbosity']);
+    }
+
+    /**
+     * Parse composer.json
+     *
+     * @return self Returns itself
+     *
+     * @throws \Exception on error
+     */
+    protected function loadComposerFile() {
+        $this->config['composer'] = $this->parseJSONFile($this->config['appDir'] . '/composer.json');
+
+        return $this;
+    }
+
+    /**
+     * Print version information
+     */
+    protected function showVersion() {
+        if (array_key_exists('version', $this->config['options'])) {
+            $this->log->info('%s %s', $this->config['composer']['name'], $this->config['composer']['version']);
+            exit(0);
+        }
+    }
+
+    /**
+     * Print help
+     *
+     * @throws \Exception on error
+     */
+    protected function showHelp() {
+        if (array_key_exists('h', $this->config['options']) ||
+            array_key_exists('help', $this->config['options'])) {
+            $class = $this->config['commands']['help']['class'];
+            /** @var Executes $help */
+            $help = new $class($this->config, $this->log);
+            $help->setup()->execute()->tearDown();
+            exit(0);
+        }
+    }
+
+    /**
+     * Execute the command given in the arguments and exit application
+     *
+     * @throws \Exception on error
+     */
+    protected function runCommand() {
+        foreach ($this->config['args'] as $arg) {
+            if (array_key_exists($arg, $this->config['commands'])) {
+                $class = $this->config['commands'][$arg]['class'];
+
+                $this->config['command'] = $arg;
+
+                if (class_exists($class) &&
+                    is_subclass_of($class, __NAMESPACE__ . '\Executes')
+                ) {
+                    /** @var Executes $command */
+                    $command = new $class($this->config, $this->log);
+
+                    foreach ($this->config['args'] as $help) {
+                        if (in_array($help, ['-h', '--help'])) {
+                            $command->showUsage();
+                            exit(0);
+                        }
+                    }
+
+                    $command->setup()->execute()->tearDown();
+
+                    exit(0);
+                }
+            }
+        }
+    }
+
+    /**
+     * Parse a JSON file
+     *
+     * @param string $file File path
+     * @param bool $force If "true" and file is not readable ignore it, otherwise throw an exception. Defaults to
+     * "false".
+     *
+     * @return array Return content as an array
+     *
+     * @throws \Exception on error
+     */
+    protected function parseJSONFile($file, $force = false) {
+        if (!is_readable($file)) {
+            if ($force === true) {
+                return [];
+            } else {
+                throw new \Exception(sprintf(
+                    'Unable to read file "%s"',
+                    $file
+                ), 400);
+            }
+        }
+
+        $result = json_decode(
+            trim(
+                file_get_contents(
+                    $file
+                )
+            ),
+            true
+        );
+
+        if ($result === false) {
+            throw new \Exception(sprintf(
+                'File "%s" contains invalid JSON data.',
+                500
+            ));
+        }
+
+        return $result;
+    }
+
+    /**
+     * The real(tm) recursive array merge.
+     *
+     * @param array $array1 First array
+     * @param array $array2 Second array
+     * @param array $array (Optional) more arrays
+     *
+     * @return array Combined array
+     */
+    protected function array_merge_recursive_overwrite(array $array1, array $array2, array $array = []) {
+        $arrays = func_get_args();
+        $merged = array();
+        while ($arrays) {
+            $array = array_shift($arrays);
+            assert('is_array($array)');
+            if (!$array) {
+                continue;
+            }
+            foreach ($array as $key => $value) {
+                if (is_string($key)) {
+                    if (is_array($value) && array_key_exists($key, $merged) && is_array($merged[$key])) {
+                        $merged[$key] = call_user_func([$this, __FUNCTION__], $merged[$key], $value);
+                    } else {
+                        $merged[$key] = $value;
+                    }
+                } else {
+                    $merged[] = $value;
+                }
+            }
+        }
+        return $merged;
+    }
+
+}

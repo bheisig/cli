@@ -1,0 +1,31 @@
+{
+    "name": "bheisig/cli",
+    "description": "Framework for command line interfaces",
+    "type": "library",
+    "keywords": ["cli"],
+    "homepage": "https://github.com/bheisig/cli",
+    "license": "AGPL-3.0+",
+    "authors": [
+        {
+            "name": "Benjamin Heisig",
+            "email": "benjamin@heisig.name",
+            "homepage": "https://benjamin.heisig.name/",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/bheisig/cli/issues",
+        "source": "https://github.com/bheisig/cli"
+    },
+    "require": {
+        "php": ">=5.6.0"
+    },
+    "require-dev": {
+        "clue/phar-composer": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "bheisig\\cli\\": "src/"
+        }
+    }
+}
