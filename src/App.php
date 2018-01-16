@@ -101,7 +101,7 @@ class App {
 
         $this->config['log'] = [
             'colorize' => true,
-            'verbosity' => LOG::ALL
+            'verbosity' => Log::ALL | ~Log::DEBUG
         ];
 
         $this->log = new Log();

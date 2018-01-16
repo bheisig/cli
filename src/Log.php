@@ -100,7 +100,7 @@ class Log {
         self::DEBUG => '0;37'
     ];
 
-    public function __construct($verbosity = self::FATAL & ~self::DEBUG, $colorize = true) {
+    public function __construct($verbosity = self::ALL & ~self::DEBUG, $colorize = true) {
         $this->setVerbosity($verbosity);
         $this->printColors($colorize);
     }
