@@ -41,14 +41,14 @@ class App {
      *
      * @var int
      */
-    const VALUE_REQUIRED = 1;
+    const OPTION_REQUIRED = 1;
 
     /**
      * Options: Option is optional.
      *
      * @var int
      */
-    const VALUE_OPTIONAL = 2;
+    const OPTION_NOT_REQUIRED = 2;
 
     /**
      * Configuration settings as key-value store
@@ -58,18 +58,11 @@ class App {
     protected $config = [];
 
     /**
-     * Short options
+     * Supported options
      *
      * @var array
      */
-    protected $shortOptions = [];
-
-    /**
-     * Long options
-     *
-     * @var array
-     */
-    protected $longOptions = [];
+    protected $options = [];
 
     /**
      * Logger
@@ -92,7 +85,7 @@ class App {
         $this
             ->addCommand('help', '\\bheisig\\cli\\Help', 'Show this help')
             ->addCommand('list', '\\bheisig\\cli\\ListCommands', 'List all commands')
-            ->addOption('c', 'config', self::VALUE_REQUIRED)
+            ->addOption('c', 'config', self::OPTION_NOT_REQUIRED)
             ->addOption('h', 'help', self::NO_VALUE)
             ->addOption(null, 'no-colors', self::NO_VALUE)
             ->addOption('q', 'quiet', self::NO_VALUE)
@@ -191,14 +184,18 @@ class App {
     public function addOption($short = null, $long = null, $value = self::NO_VALUE) {
         switch ($value) {
             case self::NO_VALUE:
-            case self::VALUE_REQUIRED:
-            case self::VALUE_OPTIONAL:
+            case self::OPTION_REQUIRED:
+            case self::OPTION_NOT_REQUIRED:
                 break;
             default:
                 throw new \Exception(
                     'Invalid value'
                 );
         }
+
+        $option = [
+            'value' => $value
+        ];
 
         if (isset($short)) {
             if (!is_string($short) || strlen($short) !== 1) {
@@ -208,7 +205,7 @@ class App {
                 ));
             }
 
-            $this->shortOptions[$short] = $value;
+            $option['short'] = $short;
         }
 
         if (isset($long)) {
@@ -219,10 +216,10 @@ class App {
                 ));
             }
 
-            $this->longOptions[$long] = $value;
+            $option['long'] = $long;
         }
 
-
+        $this->options[] = $option;
 
         return $this;
     }
@@ -280,23 +277,31 @@ class App {
     protected function parseOptions() {
         $this->config['options'] = [];
 
-        $allOptions = [
-            '-' => $this->shortOptions,
-            '--' => $this->longOptions
-        ];
+        foreach ($this->options as $option) {
+            $found = false;
 
-        foreach ($allOptions as $prefix => $options) {
-            foreach ($options as $option => $valueSetting) {
-                $key = $prefix . $option;
+            $types = [];
+
+            if (array_key_exists('short', $option)) {
+                $types['-'] = $option['short'];
+            }
+
+            if (array_key_exists('long', $option)) {
+                $types['--'] = $option['long'];
+            }
+
+            foreach ($types as $prefix => $name) {
+                $key = $prefix . $name;
                 $value = null;
 
                 for ($i = 1; $i < count($this->config['args']); $i++) {
                     if (strpos($this->config['args'][$i], $key, 0) === 0) {
-                        switch ($valueSetting) {
+                        switch ($option['value']) {
                             case self::NO_VALUE:
                                 $value = true;
                                 break;
-                            case self::VALUE_REQUIRED:
+                            case self::OPTION_REQUIRED:
+                            case self::OPTION_NOT_REQUIRED:
                                 if (strpos($this->config['args'][$i], $key . '=', 0) === 0) {
                                     $value = str_replace(
                                         $key . '=',
@@ -313,24 +318,48 @@ class App {
                                     ));
                                 }
                                 break;
-                            case self::VALUE_OPTIONAL:
-                                break;
                         }
 
-                        if (array_key_exists($option, $this->config['options']) &&
-                            !is_array($this->config['options'][$option])) {
-                            $this->config['options'][$option] = [
-                                $this->config['options'][$option],
+                        if (array_key_exists($name, $this->config['options']) &&
+                            !is_array($this->config['options'][$name])) {
+                            $this->config['options'][$name] = [
+                                $this->config['options'][$name],
                                 $value
                             ];
-                        } else if (array_key_exists($option, $this->config['options']) &&
-                            is_array($this->config['options'][$option])) {
-                            $this->config['options'][$option][] = $value;
+                        } else if (array_key_exists($name, $this->config['options']) &&
+                            is_array($this->config['options'][$name])) {
+                            $this->config['options'][$name][] = $value;
                         } else {
-                            $this->config['options'][$option] = $value;
+                            $this->config['options'][$name] = $value;
                         }
+
+                        $found = true;
                     }
                 }
+            }
+
+            if ($found === false && $option['value'] === self::OPTION_REQUIRED) {
+                $message = '';
+
+                if (array_key_exists('short', $option) && array_key_exists('long', $option)) {
+                    $message = sprintf(
+                        'Required option "-%s" or "--%s" is missing',
+                        $option['short'],
+                        $option['long']
+                    );
+                } else if (array_key_exists('short', $option) && !array_key_exists('long', $option)) {
+                    $message = sprintf(
+                        'Required option "-%s" is missing',
+                        $option['short']
+                    );
+                } else if (!array_key_exists('short', $option) && array_key_exists('long', $option)) {
+                    $message = sprintf(
+                        'Required option "--%s" is missing',
+                        $option['long']
+                    );
+                }
+
+                throw new \Exception($message);
             }
         }
 
@@ -426,7 +455,7 @@ class App {
      * @throws \Exception on error
      */
     protected function loadComposerFile() {
-        $composerFile = __DIR__ . '/../composer.json';
+        $composerFile = $this->config['appDir'] . '/composer.json';
 
         if (!is_readable($composerFile)) {
             throw new \Exception(sprintf(
