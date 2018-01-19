@@ -1,0 +1,59 @@
+#!/usr/bin/env php
+<?php
+
+namespace hello\world;
+
+use bheisig\cli\App;
+use bheisig\cli\IO;
+
+try {
+    require_once __DIR__ . '/../vendor/autoload.php';
+
+    $app = new App();
+
+    /**
+     * Look for optional configuration settings:
+     */
+
+    $app
+        // Default settings…
+        ->addConfigFile(__DIR__ . '/../config/default.json', true)
+        // …overwritten by system-wide settings…
+        ->addConfigFile('/etc/hello/config.json', true)
+        // …overwritten by user settings:
+        ->addConfigFile($_SERVER['HOME'] . '/.hello/config.json', true);
+
+    /**
+     * Add variable settings:
+     */
+
+    $app
+        ->addConfigSettings([
+                'appDir' => __DIR__ . '/..'
+        ]);
+
+    /**
+     * Add commands:
+     */
+
+    $app
+        ->addCommand('say', __NAMESPACE__ . '\\Say', 'Say "Hello, World!"');
+
+    /**
+     * Add options:
+     */
+
+    $app
+        ->addOption('r', 'reverse', App::NO_VALUE)
+        ->addOption('n', 'name', App::OPTION_NOT_REQUIRED);
+
+    /**
+     * Run app:
+     */
+
+    $app->run();
+} catch (\Exception $e) {
+    IO::err($e->getMessage());
+
+    exit(255);
+}
