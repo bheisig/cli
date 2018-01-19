@@ -2,7 +2,7 @@
     "name": "bheisig/cli",
     "description": "Framework for command line interfaces",
     "type": "library",
-    "keywords": ["cli"],
+    "keywords": ["cli", "app"],
     "homepage": "https://github.com/bheisig/cli",
     "license": "AGPL-3.0+",
     "authors": [

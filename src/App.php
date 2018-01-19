@@ -245,11 +245,11 @@ class App {
              * Try to find out what the user wants:
              */
 
-            $this->showVersion();
+            $this->printVersion();
 
             $this->runCommand();
 
-            $this->showHelp();
+            $this->callHelp();
 
             /**
              * Ooops, went to far…
@@ -426,7 +426,31 @@ class App {
      * @throws \Exception on error
      */
     protected function loadComposerFile() {
-        $this->config['composer'] = $this->parseJSONFile($this->config['appDir'] . '/composer.json');
+        $composerFile = __DIR__ . '/../composer.json';
+
+        if (!is_readable($composerFile)) {
+            throw new \Exception(sprintf(
+                'Composer file "%s" is missing or not readable',
+                $composerFile
+            ));
+        }
+
+        $this->config['composer'] = $this->parseJSONFile($composerFile);
+
+        $keys = [
+            'name',
+            'version'
+        ];
+
+        foreach ($keys as $key) {
+            if (!array_key_exists($key, $this->config['composer'])) {
+                throw new \Exception(sprintf(
+                    'Missing "%s" in composer file "%s"',
+                    $key,
+                    $composerFile
+                ));
+            }
+        }
 
         return $this;
     }
@@ -434,7 +458,7 @@ class App {
     /**
      * Print version information
      */
-    protected function showVersion() {
+    protected function printVersion() {
         if (array_key_exists('version', $this->config['options'])) {
             $this->log->info('%s %s', $this->config['composer']['name'], $this->config['composer']['version']);
             exit(0);
@@ -442,11 +466,11 @@ class App {
     }
 
     /**
-     * Print help
+     * Call command "help"
      *
      * @throws \Exception on error
      */
-    protected function showHelp() {
+    protected function callHelp() {
         if (array_key_exists('h', $this->config['options']) ||
             array_key_exists('help', $this->config['options'])) {
             $class = $this->config['commands']['help']['class'];
@@ -458,7 +482,7 @@ class App {
     }
 
     /**
-     * Execute the command given in the arguments and exit application
+     * Execute command given in the arguments and exit application
      *
      * @throws \Exception on error
      */
@@ -477,7 +501,7 @@ class App {
 
                     foreach ($this->config['args'] as $help) {
                         if (in_array($help, ['-h', '--help'])) {
-                            $command->showUsage();
+                            $command->printUsage();
                             exit(0);
                         }
                     }

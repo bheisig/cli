@@ -69,7 +69,7 @@ abstract class Command implements Executes {
     }
 
     /**
-     * Processes some routines before the execution
+     * Process some routines before executing command
      *
      * @return self Returns itself
      *
@@ -82,7 +82,7 @@ abstract class Command implements Executes {
     }
 
     /**
-     * Processes some routines after the execution
+     * Process some routines after executing command
      *
      * @return self Returns itself
      *
@@ -115,15 +115,15 @@ abstract class Command implements Executes {
     }
 
     /**
-     * Shows usage of this command
+     * Print usage of command
      *
      * @return self Returns itself
      */
-    public function showUsage() {
+    public function printUsage() {
         $this->log->info('Usage: %1$s %2$s [OPTIONS]
 
 %3$s',
-            $this->config['basename'],
+            $this->config['args'][0],
             $this->getName(),
             $this->getDescription()
         );

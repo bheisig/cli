@@ -30,7 +30,7 @@ namespace bheisig\cli;
 interface Executes {
 
     /**
-     * Processes some routines before the execution
+     * Process some routines before executing command
      *
      * @return self Returns itself
      *
@@ -39,7 +39,7 @@ interface Executes {
     public function setup();
 
     /**
-     * Executes the command
+     * Execute command
      *
      * @return self Returns itself
      *
@@ -48,7 +48,7 @@ interface Executes {
     public function execute();
 
     /**
-     * Processes some routines after the execution
+     * Process some routines after executing command
      *
      * @return self Returns itself
      *
@@ -57,10 +57,10 @@ interface Executes {
     public function tearDown();
 
     /**
-     * Shows usage of this command
+     * Print usage of command
      *
      * @return self Returns itself
      */
-    public function showUsage();
+    public function printUsage();
 
 }

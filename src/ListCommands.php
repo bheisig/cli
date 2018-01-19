@@ -30,7 +30,7 @@ namespace bheisig\cli;
 class ListCommands extends Command {
 
     /**
-     * Executes the command
+     * Execute command
      *
      * @return self Returns itself
      *
@@ -58,11 +58,11 @@ class ListCommands extends Command {
     }
 
     /**
-     * Shows usage of this command
+     * Print usage of command
      *
      * @return self Returns itself
      */
-    public function showUsage() {
+    public function printUsage() {
         $this->log->info('Usage: %1$s %2$s [OPTIONS]
 
 %3$s
@@ -78,7 +78,7 @@ Common options:
     -q, --quiet             Do not output messages, only errors
     -v, --verbose           Be more verbose
     --version               Print version information',
-            $this->config['basename'],
+            $this->config['args'][0],
             $this->getName(),
             $this->getDescription()
         );

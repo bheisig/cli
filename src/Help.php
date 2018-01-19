@@ -30,7 +30,7 @@ namespace bheisig\cli;
 class Help extends Command {
 
     /**
-     * Executes the command
+     * Execute command
      *
      * @return self Returns itself
      *
@@ -43,10 +43,10 @@ class Help extends Command {
         }
 
         if (!array_key_exists('command', $this->config)) {
-            $this->showUsage();
+            $this->printUsage();
         } else if ($this->config['command'] === 'help' &&
             count($this->config['args']) === 2) {
-            $this->showUsage();
+            $this->printUsage();
         } else if ($this->config['command'] === 'help' &&
             isset($command)) {
             $class = $this->config['commands'][$command]['class'];
@@ -54,22 +54,22 @@ class Help extends Command {
             /** @var Executes $instance */
             $instance = new $class($this->config, $this->log);
 
-            $instance->showUsage();
+            $instance->printUsage();
         } else {
             $this->log->fatal('Unknown command');
 
-            $this->showUsage();
+            $this->printUsage();
         }
 
         return $this;
     }
 
     /**
-     * Shows usage of this command
+     * Print usage of command
      *
      * @return self Returns itself
      */
-    public function showUsage() {
+    public function printUsage() {
         $commandList = '';
 
         foreach ($this->config['commands'] as $command => $commandOptions) {
@@ -112,7 +112,7 @@ Common options:
     -q, --quiet             Do not output messages, only errors
     -v, --verbose           Be more verbose
     --version               Print version information',
-            $this->config['basename'],
+            $this->config['args'][0],
             $commandList,
             $this->config['composer']['description']);
 
