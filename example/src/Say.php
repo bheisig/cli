@@ -54,8 +54,6 @@ class Say extends Command {
      * @return self Returns itself
      */
     public function printUsage() {
-        $command = strtolower((new \ReflectionClass($this))->getShortName());
-
         $this->log->info('Usage: %1$s %2$s [OPTIONS]
 
 %3$s
@@ -75,8 +73,8 @@ Options:
     -v, --verbose               Be more verbose
     --version                   Print version information',
             $this->config['args'][0],
-            $command,
-            $this->config['commands'][$command]['description']
+            $this->getName(),
+            $this->getDescription()
         );
 
         return $this;
