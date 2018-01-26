@@ -309,7 +309,7 @@ class App {
                                         $this->config['args'][$i]
                                     );
                                 } else if (array_key_exists(($i + 1), $this->config['args']) &&
-                                    strpos($this->config['args'][$i + 1], '-', 0) === false) {
+                                    substr($this->config['args'][$i + 1], 0, count($prefix)) !== $prefix) {
                                     $value = $this->config['args'][$i + 1];
                                 } else {
                                     throw new \Exception(sprintf(
