@@ -37,6 +37,8 @@ class ListCommands extends Command {
      * @throws \Exception on error
      */
     public function execute() {
+        ksort($this->config['commands']);
+
         $maxCommandLength = 0;
 
         foreach (array_keys($this->config['commands']) as $command) {
