@@ -104,8 +104,8 @@ List all commands with
 Common options:
 
     -c FILE,                Include settings stored in a JSON-formatted
-    --config FILE           configuration file FILE; you may use this
-                            option multiple times
+    --config FILE           configuration file FILE; repeat option for more
+                            than one FILE
     -h, --help              Print this help or information about a
                             specific command
     --no-colors             Do not print colored messages
