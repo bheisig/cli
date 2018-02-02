@@ -106,11 +106,16 @@ Common options:
     -c FILE,                Include settings stored in a JSON-formatted
     --config FILE           configuration file FILE; repeat option for more
                             than one FILE
-    -h, --help              Print this help or information about a
-                            specific command
+    -s KEY=VALUE,           Add runtime setting KEY with its VALUE; separate
+    --setting KEY=VALUE     nested keys with ".", for example "key1.key2=123";
+                            repeat option for more than one KEY
+
     --no-colors             Do not print colored messages
     -q, --quiet             Do not output messages, only errors
     -v, --verbose           Be more verbose
+    
+    -h, --help              Print this help or information about a
+                            specific command
     --version               Print version information',
             $this->config['args'][0],
             $commandList,

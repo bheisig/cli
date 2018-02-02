@@ -75,7 +75,7 @@ class App {
      * Constructor
      *
      * Add pre-defined commands "help" and "list" and pre-defined options "-c"/"--config", "-h"/"--help", "--no-colors",
-     * "-q"/"--quiet", "-v"/"--verbose" and "version"
+     * "-q"/"--quiet", "-v"/"--verbose", "version" and "-s/--setting"
      *
      * Initialize logger with default values
      *
@@ -90,7 +90,8 @@ class App {
             ->addOption(null, 'no-colors', self::NO_VALUE)
             ->addOption('q', 'quiet', self::NO_VALUE)
             ->addOption('v', 'verbose', self::NO_VALUE)
-            ->addOption(null, 'version', self::NO_VALUE);
+            ->addOption(null, 'version', self::NO_VALUE)
+            ->addOption('s', 'setting', self::OPTION_NOT_REQUIRED);
 
         $this->config['log'] = [
             'colorize' => true,
@@ -236,6 +237,7 @@ class App {
                 ->loadArgs()
                 ->parseOptions()
                 ->loadAdditionalConfigFiles()
+                ->addRuntimeSettings()
                 ->configureLogger();
 
             /**
@@ -429,6 +431,91 @@ class App {
         return $this;
     }
 
+    /**
+     * Look for additional configuration settings given as options
+     *
+     * @return self Returns itself
+     *
+     * @throws \Exception on error
+     */
+    protected function addRuntimeSettings() {
+        $newSettings = [];
+
+        foreach ($this->config['options'] as $option => $value) {
+            if (in_array($option, ['s', 'settings'])) {
+                switch(gettype($value)) {
+                    case 'string':
+                        $newSettings[] = $value;
+                        break;
+                    case 'array':
+                        foreach ($value as $item) {
+                            if (!is_string($item)) {
+                                throw new \Exception(sprintf(
+                                    'Unknown value "%s" for option "%s"',
+                                    $item,
+                                    $option
+                                ));
+                            }
+
+                            $newSettings[] = $item;
+                        }
+                        break;
+                    default:
+                        throw new \Exception(sprintf(
+                            'Unknown value "%s" for option "%s"',
+                            $value,
+                            $option
+                        ));
+                }
+            }
+        }
+
+        foreach ($newSettings as $newSetting) {
+            $key = strstr($newSetting, '=', true);
+            $value = strstr($newSetting, '=');
+
+            if ($key === false || $value === false ||
+                strlen($key) === 0 || strlen($value) <= 1) {
+                throw new \Exception('Invalid runtime settings');
+            }
+
+            // Crop "=":
+            $value = substr($value, 1);
+
+            $keys = explode('.', $key);
+
+            $config = $this->buildSettings($keys, $value);
+            var_dump($config);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Create associative array for settings
+     *
+     * @param string[] $keys Setting path
+     * @param mixed $value Value
+     *
+     * @return array
+     */
+    protected function buildSettings($keys, $value) {
+        $result = [];
+
+        $index = array_shift($keys);
+
+        if (!isset($keys[0])) {
+            $result[$index] = $value;
+        } else {
+            $result[$index] = $this->buildSettings($keys, $value);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Set color handling and verbosity for used logger
+     */
     protected function configureLogger() {
         if (array_key_exists('no-colors', $this->config['options'])) {
             $this->config['log']['colorize'] = false;

@@ -60,18 +60,23 @@ class Say extends Command {
 
 Options:
 
-    -n NAME, --name NAME        Add personal greetings
-    - r, --reverse              Print reversed greetings
+    -n NAME, --name NAME    Add personal greetings
+    - r, --reverse          Print reversed greetings
 
-    -c FILE,                    Include settings stored in a JSON-formatted
-    --config FILE               configuration file FILE; repeat option for
-                                more than one FILE
-    -h, --help                  Print this help or information about a
-                                specific command
-    --no-colors                 Do not print colored messages
-    -q, --quiet                 Do not output messages, only errors
-    -v, --verbose               Be more verbose
-    --version                   Print version information',
+    -c FILE,                Include settings stored in a JSON-formatted
+    --config FILE           configuration file FILE; repeat option for more
+                            than one FILE
+    -s KEY=VALUE,           Add runtime setting KEY with its VALUE; separate
+    --setting KEY=VALUE     nested keys with ".", for example "key1.key2=123";
+                            repeat option for more than one KEY
+
+    --no-colors             Do not print colored messages
+    -q, --quiet             Do not output messages, only errors
+    -v, --verbose           Be more verbose
+    
+    -h, --help              Print this help or information about a
+                            specific command
+    --version               Print version information',
             $this->config['args'][0],
             $this->getName(),
             $this->getDescription()
