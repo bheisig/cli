@@ -84,19 +84,6 @@ abstract class Command implements Executes {
     public function tearDown() {
         $this->log->debug('This took %s seconds.', (time() - $this->start));
 
-        if (time() >= mktime(0, 0, 0, 12, 24) &&
-            time() <= mktime(23, 59, 59, 12, 26)) {
-            $this->log->debug('Merry christmas!');
-        } else if (time() >= mktime(0, 0, 0, 12, 31) &&
-            time() <= mktime(23, 59, 59, 1, 1)) {
-            $this->log->debug('Happy new year!');
-        } else if (time() >= mktime(0, 0, 0, date('n', easter_date()), date('j', easter_date()) - 2) &&
-            time() <= mktime(23, 59, 59, date('n', easter_date()), date('j', easter_date()) + 1)) {
-            $this->log->debug('Happy easter!');
-        } else {
-            $this->log->debug('Have fun :)');
-        }
-
         $prettifyUnit = function ($bytes) {
             $unit=array('B','KiB','MiB','GiB','TiB','PiB');
             if ($bytes === 0) return '0 ' . $unit[0];
@@ -114,7 +101,20 @@ abstract class Command implements Executes {
             'Memory peak usage: %s',
             $prettifyUnit(memory_get_peak_usage(true))
         );
-        
+
+        if (time() >= mktime(0, 0, 0, 12, 24) &&
+            time() <= mktime(23, 59, 59, 12, 26)) {
+            $this->log->debug('Merry christmas!');
+        } else if (time() >= mktime(0, 0, 0, 12, 31) &&
+            time() <= mktime(23, 59, 59, 1, 1)) {
+            $this->log->debug('Happy new year!');
+        } else if (time() >= mktime(0, 0, 0, date('n', easter_date()), date('j', easter_date()) - 2) &&
+            time() <= mktime(23, 59, 59, date('n', easter_date()), date('j', easter_date()) + 1)) {
+            $this->log->debug('Happy easter!');
+        } else {
+            $this->log->debug('Have fun :)');
+        }
+
         return $this;
     }
 

@@ -43,20 +43,29 @@ class Help extends Command {
         }
 
         if (!array_key_exists('command', $this->config)) {
+            // app help:
             $this->printUsage();
         } else if ($this->config['command'] === 'help' &&
             count($this->config['args']) === 2) {
+            // app help:
             $this->printUsage();
         } else if ($this->config['command'] === 'help' &&
             isset($command)) {
+            // app help COMMAND:
             $class = $this->config['commands'][$command]['class'];
 
             /** @var Executes $instance */
             $instance = new $class($this->config, $this->log);
 
             $instance->printUsage();
+        } else if (!isset($command) &&
+            count($this->config['args']) > 2 &&
+            strpos($this->config['args'][2], '-') === 0) {
+            // app help --option:
+            $this->printUsage();
         } else {
-            $this->log->fatal('Unknown command');
+            // app help NONSENSE:
+            $this->log->error('Unknown command');
 
             $this->printUsage();
         }
