@@ -73,7 +73,7 @@ Options:
     --no-colors             Do not print colored messages
     -q, --quiet             Do not output messages, only errors
     -v, --verbose           Be more verbose
-    
+
     -h, --help              Print this help or information about a
                             specific command
     --version               Print version information',

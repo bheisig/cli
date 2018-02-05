@@ -51,13 +51,6 @@ abstract class Command implements Executes {
     protected $start = 0;
 
     /**
-     * Duration in seconds how long execution has taken time
-     *
-     * @var int
-     */
-    protected $executionTime = 0;
-
-    /**
      * Constructor
      *
      * @param array $config Configuration settings
@@ -89,8 +82,39 @@ abstract class Command implements Executes {
      * @throws \Exception on error
      */
     public function tearDown() {
-        $this->executionTime = time() - $this->start;
+        $this->log->debug('This took %s seconds.', (time() - $this->start));
 
+        if (time() >= mktime(0, 0, 0, 12, 24) &&
+            time() <= mktime(23, 59, 59, 12, 26)) {
+            $this->log->debug('Merry christmas!');
+        } else if (time() >= mktime(0, 0, 0, 12, 31) &&
+            time() <= mktime(23, 59, 59, 1, 1)) {
+            $this->log->debug('Happy new year!');
+        } else if (time() >= mktime(0, 0, 0, date('n', easter_date()), date('j', easter_date()) - 2) &&
+            time() <= mktime(23, 59, 59, date('n', easter_date()), date('j', easter_date()) + 1)) {
+            $this->log->debug('Happy easter!');
+        } else {
+            $this->log->debug('Have fun :)');
+        }
+
+        $prettifyUnit = function ($bytes) {
+            $unit=array('B','KiB','MiB','GiB','TiB','PiB');
+            if ($bytes === 0) return '0 ' . $unit[0];
+            return @round(
+                    $bytes /
+                    pow(
+                        1024,
+                        ($i = floor(log($bytes,1024)))
+                    ),
+                    2
+                ) . ' ' . (isset($unit[$i]) ? $unit[$i] : 'B');
+        };
+
+        $this->log->debug(
+            'Memory peak usage: %s',
+            $prettifyUnit(memory_get_peak_usage(true))
+        );
+        
         return $this;
     }
 
