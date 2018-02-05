@@ -442,7 +442,7 @@ class App {
         $newSettings = [];
 
         foreach ($this->config['options'] as $option => $value) {
-            if (in_array($option, ['s', 'settings'])) {
+            if (in_array($option, ['s', 'setting'])) {
                 switch(gettype($value)) {
                     case 'string':
                         $newSettings[] = $value;
@@ -482,10 +482,21 @@ class App {
             // Crop "=":
             $value = substr($value, 1);
 
+            // Type casting:
+            if (is_numeric($value)) {
+                // Returns int or float:
+                $value = $value + 0;
+            } else if (strtolower($value) === 'true') {
+                $value = true;
+            } else if (strtolower($value) === 'false') {
+                $value = false;
+            }
+
             $keys = explode('.', $key);
 
-            $config = $this->buildSettings($keys, $value);
-            var_dump($config);
+            $settings = $this->buildSettings($keys, $value);
+
+            $this->addConfigSettings($settings);
         }
 
         return $this;
