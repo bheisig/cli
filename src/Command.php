@@ -82,16 +82,25 @@ abstract class Command implements Executes {
      * @throws \Exception on error
      */
     public function tearDown() {
-        $this->log->debug('This took %s seconds.', (time() - $this->start));
+        $seconds = time() - $this->start;
+
+        switch ($seconds) {
+            case 1:
+                $this->log->debug('This took 1 second.');
+                break;
+            default:
+                $this->log->debug('This took %s seconds.', $seconds);
+                break;
+        }
 
         $prettifyUnit = function ($bytes) {
-            $unit=array('B','KiB','MiB','GiB','TiB','PiB');
+            $unit = ['B','KiB','MiB','GiB','TiB','PiB'];
             if ($bytes === 0) return '0 ' . $unit[0];
             return @round(
                     $bytes /
                     pow(
                         1024,
-                        ($i = floor(log($bytes,1024)))
+                        ($i = (int) floor(log($bytes,1024)))
                     ),
                     2
                 ) . ' ' . (isset($unit[$i]) ? $unit[$i] : 'B');
