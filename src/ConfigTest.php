@@ -39,15 +39,17 @@ class ConfigTest extends Command {
      * @throws \Exception on error
      */
     public function execute() {
-        $file = __DIR__ . '/../config/schema.json';
+        $file = $this->config['appDir'] . '/config/schema.json';
 
         $rules = JSONFile::read($file);
 
         $this->validate($this->config, $rules);
 
-        if (count($this->errors)) {
+        if (count($this->errors) === 0) {
             $this->log->info('Configuration settings are OK.');
         } else {
+            $this->log->warning('One or more errors found in configuration settings:');
+
             foreach ($this->errors as $error) {
                 $this->log->warning($error);
             }
@@ -247,6 +249,16 @@ class ConfigTest extends Command {
                             'Configuration setting "%s" is not a boolean',
                             $key
                         );
+                    }
+                    break;
+                case 'mixed':
+                    if (array_key_exists('values', $rule)) {
+                        if (!in_array($value, $rule['values'])) {
+                            $this->errors[] = sprintf(
+                                'Configuration setting "%s" is unknown',
+                                $key
+                            );
+                        }
                     }
                     break;
                 default:
