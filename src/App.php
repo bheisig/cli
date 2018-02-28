@@ -85,6 +85,7 @@ class App {
         $this
             ->addCommand('help', '\\bheisig\\cli\\Help', 'Show this help')
             ->addCommand('list', '\\bheisig\\cli\\ListCommands', 'List all commands')
+            ->addCommand('configtest', '\\bheisig\\cli\\ConfigTest', 'Validate configuration settings')
             ->addOption('c', 'config', self::OPTION_NOT_REQUIRED)
             ->addOption('h', 'help', self::NO_VALUE)
             ->addOption(null, 'no-colors', self::NO_VALUE)
@@ -113,7 +114,7 @@ class App {
      * @throws \Exception on error
      */
     public function addConfigFile($file, $force = false) {
-        $settings = $this->parseJSONFile($file, $force);
+        $settings = JSONFile::read($file, $force);
 
         if (is_array($settings)) {
             $this->addConfigSettings($settings);
@@ -562,7 +563,7 @@ class App {
             ));
         }
 
-        $this->config['composer'] = $this->parseJSONFile($composerFile);
+        $this->config['composer'] = JSONFile::read($composerFile);
 
         $keys = [
             'name',
@@ -639,48 +640,6 @@ class App {
                 }
             }
         }
-    }
-
-    /**
-     * Parse a JSON file
-     *
-     * @param string $file File path
-     * @param bool $force If "true" and file is not readable ignore it, otherwise throw an exception. Defaults to
-     * "false".
-     *
-     * @return array Return content as an array
-     *
-     * @throws \Exception on error
-     */
-    protected function parseJSONFile($file, $force = false) {
-        if (!is_readable($file)) {
-            if ($force === true) {
-                return [];
-            } else {
-                throw new \Exception(sprintf(
-                    'Unable to read file "%s"',
-                    $file
-                ), 400);
-            }
-        }
-
-        $result = json_decode(
-            trim(
-                file_get_contents(
-                    $file
-                )
-            ),
-            true
-        );
-
-        if ($result === false) {
-            throw new \Exception(sprintf(
-                'File "%s" contains invalid JSON data.',
-                500
-            ));
-        }
-
-        return $result;
     }
 
     /**
