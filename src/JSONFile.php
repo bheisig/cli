@@ -71,4 +71,32 @@ class JSONFile {
         return $result;
     }
 
+    /**
+     * Write JSON-formatted content to file
+     *
+     * @param string $file File path
+     * @param array $content Content
+     *
+     * @throws \Exception on error
+     */
+    public static function write($file, array $content) {
+        $jsonString = json_encode($content, JSON_PRETTY_PRINT);
+
+        if ($jsonString === false) {
+            throw new \Exception('Unable to convert array to JSON string');
+        }
+
+        $status = file_put_contents(
+            $file,
+            $jsonString . PHP_EOL
+        );
+
+        if ($status === false) {
+            throw new \Exception(sprintf(
+                'Unable to write JSON-formatted content to file %s',
+                $file
+            ));
+        }
+    }
+
 }
