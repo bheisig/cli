@@ -211,7 +211,8 @@ class ConfigTest extends Command {
                         if ($value <= $rule['gt']) {
                             $this->errors[] = sprintf(
                                 'Configuration setting "%s" is not greater than %s',
-                                $key
+                                $key,
+                                $rule['gt']
                             );
                         }
                     }
@@ -220,7 +221,8 @@ class ConfigTest extends Command {
                         if ($value < $rule['ge']) {
                             $this->errors[] = sprintf(
                                 'Configuration setting "%s" is not greater equal %s',
-                                $key
+                                $key,
+                                $rule['ge']
                             );
                         }
                     }
@@ -229,7 +231,8 @@ class ConfigTest extends Command {
                         if ($value >= $rule['lt']) {
                             $this->errors[] = sprintf(
                                 'Configuration setting "%s" is not less than %s',
-                                $key
+                                $key,
+                                $rule['lt']
                             );
                         }
                     }
@@ -238,7 +241,8 @@ class ConfigTest extends Command {
                         if ($value > $rule['le']) {
                             $this->errors[] = sprintf(
                                 'Configuration setting "%s" is not less equal %s',
-                                $key
+                                $key,
+                                $rule['le']
                             );
                         }
                     }

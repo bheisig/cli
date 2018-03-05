@@ -22,7 +22,7 @@ The goal is to build intuitive CLI tools. Nobody likes to read documentation, so
 *   Pre-defined usage output
 *   JSON-based configuration with defaults, system-wide, user defined and runtime settings
 *   Support for long and short options with optional or required values
-*   Pre-defined options for verbosity/quietness, usage, version information, additional configuration files, runtime settings
+*   Pre-defined options for verbosity/quietness, usage, version information, additional configuration files, runtime settings, configuration test
 *   Verbosity mode outputs human-readable runtime in seconds and peak memory usage
 
 
