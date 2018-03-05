@@ -220,7 +220,7 @@ class ConfigTest extends Command {
                     if (array_key_exists('ge', $rule)) {
                         if ($value < $rule['ge']) {
                             $this->errors[] = sprintf(
-                                'Configuration setting "%s" is not greater equal %s',
+                                'Configuration setting "%s" is not greater or equal %s',
                                 $key,
                                 $rule['ge']
                             );
@@ -240,7 +240,7 @@ class ConfigTest extends Command {
                     if (array_key_exists('le', $rule)) {
                         if ($value > $rule['le']) {
                             $this->errors[] = sprintf(
-                                'Configuration setting "%s" is not less equal %s',
+                                'Configuration setting "%s" is not less or equal %s',
                                 $key,
                                 $rule['le']
                             );
