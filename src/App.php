@@ -624,7 +624,7 @@ class App {
                 $this->config['command'] = $arg;
 
                 if (class_exists($class) &&
-                    is_subclass_of($class, __NAMESPACE__ . '\Executes')
+                    is_subclass_of($class, __NAMESPACE__ . '\\Command\\Executes')
                 ) {
                     /** @var Executes $command */
                     $command = new $class($this->config, $this->log);
