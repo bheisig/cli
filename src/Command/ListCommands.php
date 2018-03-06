@@ -22,12 +22,12 @@
  * @link https://github.com/bheisig/cli
  */
 
-namespace bheisig\cli;
+namespace bheisig\cli\Command;
 
 /**
- * Command "help"
+ * Command "list"
  */
-class Help extends Command {
+class ListCommands extends Command {
 
     /**
      * Execute command
@@ -37,37 +37,23 @@ class Help extends Command {
      * @throws \Exception on error
      */
     public function execute() {
-        if (count($this->config['args']) > 2 &&
-            array_key_exists($this->config['args'][2], $this->config['commands'])) {
-            $command = $this->config['args'][2];
+        ksort($this->config['commands']);
+
+        $maxCommandLength = 0;
+
+        foreach (array_keys($this->config['commands']) as $command) {
+            if (strlen($command) > $maxCommandLength) {
+                $maxCommandLength = strlen($command);
+            }
         }
 
-        if (!array_key_exists('command', $this->config)) {
-            // app help:
-            $this->printUsage();
-        } else if ($this->config['command'] === 'help' &&
-            count($this->config['args']) === 2) {
-            // app help:
-            $this->printUsage();
-        } else if ($this->config['command'] === 'help' &&
-            isset($command)) {
-            // app help COMMAND:
-            $class = $this->config['commands'][$command]['class'];
+        $tab = 4;
+        $minLength = $tab * (int) ($maxCommandLength / $tab) + 2 * $tab;
 
-            /** @var Executes $instance */
-            $instance = new $class($this->config, $this->log);
-
-            $instance->printUsage();
-        } else if (!isset($command) &&
-            count($this->config['args']) > 2 &&
-            strpos($this->config['args'][2], '-') === 0) {
-            // app help --option:
-            $this->printUsage();
-        } else {
-            // app help NONSENSE:
-            $this->log->error('Unknown command');
-
-            $this->printUsage();
+        foreach ($this->config['commands'] as $command => $details) {
+            $this->log->info(
+                str_pad($command, $minLength) . $details['description']
+            );
         }
 
         return $this;
@@ -79,36 +65,9 @@ class Help extends Command {
      * @return self Returns itself
      */
     public function printUsage() {
-        $commandList = '';
+        $this->log->info('Usage: %1$s %2$s [OPTIONS]
 
-        foreach ($this->config['commands'] as $command => $commandOptions) {
-            if ($command === 'help' || $command === 'list') {
-                continue;
-            }
-
-            $separator = 24 - strlen($command);
-
-            $commandList .= PHP_EOL . '    ' . $command . str_pad(' ', $separator) . $commandOptions['description'];
-        }
-
-        $this->log->info('%3$s
-        
-Usage: %1$s [COMMAND] [OPTIONS]
-
-Commands:
-%2$s
-
-For more information about a specific command use
-
-    %1$s help COMMAND
-
-or
-
-    %1$s COMMAND --help
-
-List all commands with
-
-    %1$s list
+%3$s
 
 Common options:
 
@@ -127,8 +86,9 @@ Common options:
                             specific command
     --version               Print version information',
             $this->config['args'][0],
-            $commandList,
-            $this->config['composer']['description']);
+            $this->getName(),
+            $this->getDescription()
+        );
 
         return $this;
     }

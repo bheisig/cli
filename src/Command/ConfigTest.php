@@ -22,7 +22,9 @@
  * @link https://github.com/bheisig/cli
  */
 
-namespace bheisig\cli;
+namespace bheisig\cli\Command;
+
+use bheisig\cli\JSONFile;
 
 /**
  * Command "configtest"

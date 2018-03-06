@@ -1,8 +1,8 @@
 <?php
 
-namespace hello\world;
+namespace hello\world\Command;
 
-use bheisig\cli\Command;
+use bheisig\cli\Command\Command;
 
 /**
  * Command "say"

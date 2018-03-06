@@ -24,6 +24,8 @@
 
 namespace bheisig\cli;
 
+use bheisig\cli\Command\Executes;
+
 /**
  * CLI application
  */
@@ -83,9 +85,9 @@ class App {
      */
     public function __construct() {
         $this
-            ->addCommand('help', '\\bheisig\\cli\\Help', 'Show this help')
-            ->addCommand('list', '\\bheisig\\cli\\ListCommands', 'List all commands')
-            ->addCommand('configtest', '\\bheisig\\cli\\ConfigTest', 'Validate configuration settings')
+            ->addCommand('help', '\\bheisig\\cli\\Command\\Help', 'Show this help')
+            ->addCommand('list', '\\bheisig\\cli\\Command\\ListCommands', 'List all commands')
+            ->addCommand('configtest', '\\bheisig\\cli\\Command\\ConfigTest', 'Validate configuration settings')
             ->addOption('c', 'config', self::OPTION_NOT_REQUIRED)
             ->addOption('h', 'help', self::NO_VALUE)
             ->addOption(null, 'no-colors', self::NO_VALUE)

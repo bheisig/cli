@@ -22,7 +22,7 @@
  * @link https://github.com/bheisig/cli
  */
 
-namespace bheisig\cli;
+namespace bheisig\cli\Command;
 
 /**
  * Interface for commands

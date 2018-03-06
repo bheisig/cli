@@ -37,7 +37,7 @@ try {
      */
 
     $app
-        ->addCommand('say', __NAMESPACE__ . '\\Say', 'Say "Hello, World!"');
+        ->addCommand('say', __NAMESPACE__ . '\\Command\\Say', 'Say "Hello, World!"');
 
     /**
      * Add options:
