@@ -24,14 +24,13 @@
 
 namespace bheisig\cli\Command;
 
+use bheisig\cli\Config;
 use bheisig\cli\JSONFile;
 
 /**
  * Command "configtest"
  */
 class ConfigTest extends Command {
-
-    protected $errors = [];
 
     /**
      * Execute command
@@ -45,235 +44,20 @@ class ConfigTest extends Command {
 
         $rules = JSONFile::read($file);
 
-        $this->validate($this->config, $rules);
+        $config = new Config();
+        $errors = $config->validate($this->config, $rules);
 
-        if (count($this->errors) === 0) {
+        if (count($errors) === 0) {
             $this->log->info('Configuration settings are OK.');
         } else {
             $this->log->warning('One or more errors found in configuration settings:');
 
-            foreach ($this->errors as $error) {
+            foreach ($errors as $error) {
                 $this->log->warning($error);
             }
         }
 
         return $this;
-    }
-
-    /**
-     * @param array $content
-     * @param array $rules
-     * @param string $prefix
-     *
-     * @throws \Exception on error
-     */
-    protected function validate(array $content, array $rules, $prefix = '') {
-        foreach ($rules as $rule) {
-            if (strlen($prefix) > 0) {
-                $key = $prefix . '.' . $rule['key'];
-            } else {
-                $key = $rule['key'];
-            }
-
-            if ($rule['required'] &&
-                !array_key_exists($rule['key'], $content)) {
-                $this->errors[] = sprintf(
-                    'Missing configuration setting "%s"',
-                    $key
-                );
-            } else if ($rule['required'] === false &&
-                !array_key_exists($rule['key'], $content)) {
-                continue;
-            }
-
-            $value = $content[$rule['key']];
-
-            switch ($rule['type']) {
-                case 'object':
-                    if (!is_array($value)) {
-                        $this->errors[] = sprintf(
-                            'Configuration setting "%s" is not an object',
-                            $key
-                        );
-                    }
-
-                    $this->validate($value, $rule['nodes'], $key);
-                    break;
-                case 'array':
-                    if (!is_array($value)) {
-                        $this->errors[] = sprintf(
-                            'Configuration setting "%s" is not an array',
-                            $key
-                        );
-                    }
-
-                    if (array_key_exists('minCount', $rule)) {
-                        if (count($value) < $rule['minCount']) {
-                            $this->errors[] = sprintf(
-                                'Configuration setting "%s" has too few elements',
-                                $key
-                            );
-                        }
-                    }
-
-                    if (array_key_exists('items', $rule)) {
-                        foreach ($value as $item) {
-                            switch ($rule['items']) {
-                                case 'string':
-                                    if (!is_string($item)) {
-                                        $this->errors[] = sprintf(
-                                            'Configuration setting "%s" contains a non string value',
-                                            $key
-                                        );
-                                    }
-
-                                    if (array_key_exists('minLength', $rule)) {
-                                        if (strlen($item) < $rule['minLength']) {
-                                            $this->errors[] = sprintf(
-                                                'Configuration setting "%s" has a too short string "%s". Minimum length is %s character(s).',
-                                                $key,
-                                                $item,
-                                                $rule['minLength']
-                                            );
-                                        }
-                                    }
-                                    break;
-                                case 'boolean':
-                                    if (!is_bool($item)) {
-                                        $this->errors[] = sprintf(
-                                            'Configuration setting "%s" contains a non boolean value',
-                                            $key
-                                        );
-                                    }
-                                    break;
-                                case 'integer':
-                                    if (!is_int($item)) {
-                                        $this->errors[] = sprintf(
-                                            'Configuration setting "%s" contains a non integer value',
-                                            $key
-                                        );
-                                    }
-                                    break;
-                                default:
-                                    throw new \Exception(sprintf(
-                                        'Unknown value "%s" for "items"',
-                                        $rule['items']
-                                    ));
-                            }
-                        }
-                    }
-
-                    if (array_key_exists('values', $rule)) {
-                        foreach ($value as $item) {
-                            if (!in_array($item, $rule['values'])) {
-                                $this->errors[] = sprintf(
-                                    'Configuration setting "%s" has an unknown value',
-                                    $key
-                                );
-                            }
-                        }
-                    }
-                    break;
-                case 'string':
-                    if (!is_string($value)) {
-                        $this->errors[] = sprintf(
-                            'Configuration setting "%s" is not a string',
-                            $key
-                        );
-                    }
-
-                    if (array_key_exists('minLength', $rule)) {
-                        if (strlen($value) < $rule['minLength']) {
-                            $this->errors[] = sprintf(
-                                'Configuration setting "%s" is too short. Minimum length is %s character(s).',
-                                $key,
-                                $rule['minLength']
-                            );
-                        }
-                    }
-
-                    if (array_key_exists('values', $rule)) {
-                        if (!in_array($value, $rule['values'])) {
-                            $this->errors[] = sprintf(
-                                'Configuration setting "%s" is unknown',
-                                $key
-                            );
-                        }
-                    }
-                    break;
-                case 'integer':
-                    if (!is_int($value)) {
-                        $this->errors[] = sprintf(
-                            'Configuration setting "%s" is not an integer',
-                            $key
-                        );
-                    }
-
-                    if (array_key_exists('gt', $rule)) {
-                        if ($value <= $rule['gt']) {
-                            $this->errors[] = sprintf(
-                                'Configuration setting "%s" is not greater than %s',
-                                $key,
-                                $rule['gt']
-                            );
-                        }
-                    }
-
-                    if (array_key_exists('ge', $rule)) {
-                        if ($value < $rule['ge']) {
-                            $this->errors[] = sprintf(
-                                'Configuration setting "%s" is not greater or equal %s',
-                                $key,
-                                $rule['ge']
-                            );
-                        }
-                    }
-
-                    if (array_key_exists('lt', $rule)) {
-                        if ($value >= $rule['lt']) {
-                            $this->errors[] = sprintf(
-                                'Configuration setting "%s" is not less than %s',
-                                $key,
-                                $rule['lt']
-                            );
-                        }
-                    }
-
-                    if (array_key_exists('le', $rule)) {
-                        if ($value > $rule['le']) {
-                            $this->errors[] = sprintf(
-                                'Configuration setting "%s" is not less or equal %s',
-                                $key,
-                                $rule['le']
-                            );
-                        }
-                    }
-                    break;
-                case 'boolean':
-                    if (!is_bool($value)) {
-                        $this->errors[] = sprintf(
-                            'Configuration setting "%s" is not a boolean',
-                            $key
-                        );
-                    }
-                    break;
-                case 'mixed':
-                    if (array_key_exists('values', $rule)) {
-                        if (!in_array($value, $rule['values'])) {
-                            $this->errors[] = sprintf(
-                                'Configuration setting "%s" is unknown',
-                                $key
-                            );
-                        }
-                    }
-                    break;
-                default:
-                    throw new \Exception(sprintf(
-                        'Unknown type "%s" in schema',
-                        $rule['type']
-                    ));
-            }
-        }
     }
 
     /**
