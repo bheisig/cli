@@ -88,6 +88,7 @@ class App {
             ->addCommand('help', '\\bheisig\\cli\\Command\\Help', 'Show this help')
             ->addCommand('list', '\\bheisig\\cli\\Command\\ListCommands', 'List all commands')
             ->addCommand('configtest', '\\bheisig\\cli\\Command\\ConfigTest', 'Validate configuration settings')
+            ->addCommand('print-config', '\\bheisig\\cli\\Command\\PrintConfig', 'Print current configuration settings')
             ->addOption('c', 'config', self::OPTION_NOT_REQUIRED)
             ->addOption('h', 'help', self::NO_VALUE)
             ->addOption(null, 'no-colors', self::NO_VALUE)
