@@ -24,6 +24,7 @@
 
 namespace bheisig\cli\Command;
 
+use bheisig\cli\IO;
 use bheisig\cli\Log;
 
 /**
@@ -194,6 +195,25 @@ abstract class Command implements Executes {
         }
 
         return '';
+    }
+
+    protected function askForPermission($question) {
+        $answer = strtolower(
+            IO::in($question  . ' [Y|n]:')
+        );
+
+        switch($answer) {
+            case 'yes':
+            case 'y':
+            case '':
+                return true;
+            case 'no':
+            case 'n':
+                return false;
+            default:
+                $this->log->warning('Excuse me, what do you mean?');
+                return $this->askForPermission($question);
+        }
     }
 
 }

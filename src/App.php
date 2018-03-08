@@ -85,10 +85,11 @@ class App {
      */
     public function __construct() {
         $this
-            ->addCommand('help', '\\bheisig\\cli\\Command\\Help', 'Show this help')
-            ->addCommand('list', '\\bheisig\\cli\\Command\\ListCommands', 'List all commands')
-            ->addCommand('configtest', '\\bheisig\\cli\\Command\\ConfigTest', 'Validate configuration settings')
-            ->addCommand('print-config', '\\bheisig\\cli\\Command\\PrintConfig', 'Print current configuration settings')
+            ->addCommand('help', __NAMESPACE__ . '\\Command\\Help', 'Show this help')
+            ->addCommand('list', __NAMESPACE__ . '\\Command\\ListCommands', 'List all commands')
+            ->addCommand('init', __NAMESPACE__ . '\\Command\\Init', 'Create/update user-defined or system-wide configuration settings')
+            ->addCommand('configtest', __NAMESPACE__ . '\\Command\\ConfigTest', 'Validate configuration settings')
+            ->addCommand('print-config', __NAMESPACE__ . '\\Command\\PrintConfig', 'Print current configuration settings')
             ->addOption('c', 'config', self::OPTION_NOT_REQUIRED)
             ->addOption('h', 'help', self::NO_VALUE)
             ->addOption(null, 'no-colors', self::NO_VALUE)
@@ -236,13 +237,18 @@ class App {
      */
     public function run() {
         try {
+            /**
+             * Start you engine…
+             */
+
             $this
                 ->loadComposerFile()
                 ->loadArgs()
                 ->parseOptions()
                 ->loadAdditionalConfigFiles()
                 ->addRuntimeSettings()
-                ->configureLogger();
+                ->configureLogger()
+                ->validateConfig();
 
             /**
              * Try to find out what the user wants:
@@ -530,6 +536,8 @@ class App {
 
     /**
      * Set color handling and verbosity for used logger
+     *
+     * @return self Returns itself
      */
     protected function configureLogger() {
         if (array_key_exists('no-colors', $this->config['options'])) {
@@ -547,6 +555,34 @@ class App {
         }
 
         $this->log->setVerbosity($this->config['log']['verbosity']);
+
+        return $this;
+    }
+
+    /**
+     * Validate configuration settings
+     *
+     * @return self Returns itself
+     *
+     * @throws \Exception on error
+     */
+    protected function validateConfig() {
+        $file = $this->config['appDir'] . '/config/schema.json';
+        $rules = JSONFile::read($file);
+        $config = new Config();
+        $errors = $config->validate($this->config, $rules);
+
+        if (count($errors) > 0) {
+            $this->log->warning('One or more errors found in configuration settings:');
+
+            foreach ($errors as $error) {
+                $this->log->warning($error);
+            }
+
+            throw new \Exception('Cannot proceed unless you fix your configuration');
+        }
+
+        return $this;
     }
 
     /**
