@@ -247,8 +247,7 @@ class App {
                 ->parseOptions()
                 ->loadAdditionalConfigFiles()
                 ->addRuntimeSettings()
-                ->configureLogger()
-                ->validateConfig();
+                ->configureLogger();
 
             /**
              * Try to find out what the user wants:
@@ -555,32 +554,6 @@ class App {
         }
 
         $this->log->setVerbosity($this->config['log']['verbosity']);
-
-        return $this;
-    }
-
-    /**
-     * Validate configuration settings
-     *
-     * @return self Returns itself
-     *
-     * @throws \Exception on error
-     */
-    protected function validateConfig() {
-        $file = $this->config['appDir'] . '/config/schema.json';
-        $rules = JSONFile::read($file);
-        $config = new Config();
-        $errors = $config->validate($this->config, $rules);
-
-        if (count($errors) > 0) {
-            $this->log->warning('One or more errors found in configuration settings:');
-
-            foreach ($errors as $error) {
-                $this->log->warning($error);
-            }
-
-            throw new \Exception('Cannot proceed unless you fix your configuration');
-        }
 
         return $this;
     }
