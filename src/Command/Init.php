@@ -42,16 +42,18 @@ class Init extends Command {
     public function execute() {
         $this->log->info($this->getDescription());
 
+        $appName = $this->config['composer']['name'];
+
         switch ($_SERVER['USER']) {
             case 'root':
-                $configDir = '/etc/idoitcmk';
-                $configFile = $configDir . '/config.json';
+                $configDir = '/etc/' . $appName;
                 break;
             default:
-                $configDir = $_SERVER['HOME'] . '/.idoitcmk';
-                $configFile = $configDir . '/config.json';
+                $configDir = $_SERVER['HOME'] . '/.' . $appName;
                 break;
         }
+
+        $configFile = $configDir . '/config.json';
 
         $schemaFile = $this->config['appDir'] . '/config/schema.json';
 

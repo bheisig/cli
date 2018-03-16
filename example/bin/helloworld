@@ -12,19 +12,7 @@ try {
     $app = new App();
 
     /**
-     * Look for optional configuration settings:
-     */
-
-    $app
-        // Default settings…
-        ->addConfigFile(__DIR__ . '/../config/default.json', true)
-        // …overwritten by system-wide settings…
-        ->addConfigFile('/etc/hello/config.json', true)
-        // …overwritten by user settings:
-        ->addConfigFile($_SERVER['HOME'] . '/.hello/config.json', true);
-
-    /**
-     * Add variable settings:
+     * Add settings:
      */
 
     $app

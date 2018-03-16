@@ -245,6 +245,7 @@ class App {
                 ->loadComposerFile()
                 ->loadArgs()
                 ->parseOptions()
+                ->loadOptionalConfigFiles()
                 ->loadAdditionalConfigFiles()
                 ->addRuntimeSettings()
                 ->configureLogger();
@@ -390,6 +391,31 @@ class App {
         if (count($this->config['args']) < 2) {
             throw new \Exception('Too few arguments', 400);
         }
+
+        return $this;
+    }
+
+    /**
+     * Try to load optional configuration files (app defaults, system-wide, user-specific)
+     *
+     * Default settings <APP DIR>/config/default.json are overwritten by…
+     * System-wide settings /etc/<APP NAME>/config.json are overwritten by…
+     * User settings ~/.<APP NAME>/config.json
+     *
+     * @return self Returns itself
+     *
+     * @throws \Exception on error
+     */
+    protected function loadOptionalConfigFiles() {
+        $appName = $this->config['composer']['name'];
+
+        $this
+            // Default settings…
+            ->addConfigFile($this->config['appDir'] . '/config/default.json', true)
+            // …overwritten by system-wide settings…
+            ->addConfigFile('/etc/' . $appName . '/config.json', true)
+            // …overwritten by user settings:
+            ->addConfigFile($_SERVER['HOME'] . '/.' . $appName . '/config.json', true);
 
         return $this;
     }
