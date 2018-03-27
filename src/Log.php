@@ -78,6 +78,11 @@ class Log {
      */
     const ALL = 63;
 
+    /**
+     * Log Levels
+     *
+     * @var array
+     */
     static protected $levels = [
         self::FATAL => 'fatal',
         self::ERROR => 'error',
@@ -87,10 +92,25 @@ class Log {
         self::DEBUG => 'debug'
     ];
 
+    /**
+     * Current verbosity
+     *
+     * @var int
+     */
     protected $verbosity;
 
+    /**
+     * Colorize output?
+     *
+     * @var bool Defaults to true
+     */
     protected $colorize = true;
 
+    /**
+     * Bash color codes
+     *
+     * @var array
+     */
     protected $colors = [
         self::FATAL => '0;31',
         self::ERROR => '0;31',
@@ -100,15 +120,31 @@ class Log {
         self::DEBUG => '0;37'
     ];
 
+    /**
+     * Constructor
+     *
+     * @param int $verbosity Verbosity; defaults to everything except debug messages
+     * @param bool $colorize Colorize output? Defaults to true
+     */
     public function __construct($verbosity = self::ALL & ~self::DEBUG, $colorize = true) {
         $this->setVerbosity($verbosity);
         $this->printColors($colorize);
     }
 
+    /**
+     * Set verbosity
+     *
+     * @param int $verbosity Verbosity
+     */
     public function setVerbosity($verbosity) {
         $this->verbosity = $verbosity;
     }
 
+    /**
+     * Colorize output?
+     *
+     * @param bool $colorize Decision
+     */
     public function printColors($colorize) {
         $this->colorize = $colorize;
     }
@@ -118,7 +154,7 @@ class Log {
      *
      * @param int $level Event level. One of the following class constants: DEBUG, INFO, WARNING, ERROR or FATAL.
      * @param string $value What to be formatted
-     * @param string $args (Optional) One or more strings
+     * @param mixed $args (Optional) One or more arguments
      *
      * @see sprintf()
      */
@@ -145,7 +181,7 @@ class Log {
      * Logs fatal event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
-     * @param string $args (Optional) One or more strings
+     * @param mixed $args (Optional) One or more arguments
      *
      * @see sprintf()
      */
@@ -158,7 +194,7 @@ class Log {
      * Logs error event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
-     * @param string $args (Optional) One or more strings
+     * @param mixed $args (Optional) One or more arguments
      *
      * @see sprintf()
      */
@@ -171,7 +207,7 @@ class Log {
      * Logs warning event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
-     * @param string $args (Optional) One or more strings
+     * @param mixed $args (Optional) One or more arguments
      *
      * @see sprintf()
      */
@@ -184,7 +220,7 @@ class Log {
      * Logs warning event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
-     * @param string $args (Optional) One or more strings
+     * @param mixed $args (Optional) One or more arguments
      *
      * @see sprintf()
      */
@@ -197,7 +233,7 @@ class Log {
      * Logs info event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
-     * @param string $args (Optional) One or more strings
+     * @param mixed $args (Optional) One or more arguments
      *
      * @see sprintf()
      */
@@ -210,7 +246,7 @@ class Log {
      * Logs debug event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
-     * @param string $args (Optional) One or more strings
+     * @param mixed $args (Optional) One or more arguments
      *
      * @see sprintf()
      */

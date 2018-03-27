@@ -402,6 +402,8 @@ class App {
      * System-wide settings /etc/<APP NAME>/config.json are overwritten by…
      * User settings ~/.<APP NAME>/config.json
      *
+     * These files needn't to exist.
+     *
      * @return self Returns itself
      *
      * @throws \Exception on error
