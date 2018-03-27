@@ -21,11 +21,20 @@
         "php": ">=5.6.0"
     },
     "require-dev": {
-        "clue/phar-composer": "^1.0"
+        "phpstan/phpstan": "^0.9.2",
+        "sebastian/phpcpd": ">=3.0.1"
     },
     "autoload": {
         "psr-4": {
             "bheisig\\cli\\": "src/"
         }
+    },
+    "scripts": {
+        "phpcpd": [
+            "./vendor/bin/phpcpd src/"
+        ],
+        "phpstan": [
+            "./vendor/bin/phpstan analyze -l max src"
+        ]
     }
 }
