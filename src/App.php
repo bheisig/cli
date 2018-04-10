@@ -409,7 +409,7 @@ class App {
      * @throws \Exception on error
      */
     protected function loadOptionalConfigFiles() {
-        $appName = $this->config['composer']['name'];
+        $appName = $this->config['composer']['extra']['name'];
 
         $this
             // Default settings…
@@ -605,15 +605,23 @@ class App {
 
         $this->config['composer'] = JSONFile::read($composerFile);
 
+        if (!array_key_exists('extra', $this->config['composer']) ||
+            !is_array($this->config['extra'])) {
+            throw new \Exception(sprintf(
+                'Missing "extra" in composer file "%s"',
+                $composerFile
+            ));
+        }
+
         $keys = [
             'name',
             'version'
         ];
 
         foreach ($keys as $key) {
-            if (!array_key_exists($key, $this->config['composer'])) {
+            if (!array_key_exists($key, $this->config['composer']['extra'])) {
                 throw new \Exception(sprintf(
-                    'Missing "%s" in composer file "%s"',
+                    'Missing "extra.%s" in composer file "%s"',
                     $key,
                     $composerFile
                 ));
@@ -628,7 +636,10 @@ class App {
      */
     protected function printVersion() {
         if (array_key_exists('version', $this->config['options'])) {
-            $this->log->info('%s %s', $this->config['composer']['name'], $this->config['composer']['version']);
+            $this->log->info(
+                '%s %s',
+                $this->config['composer']['extra']['name'],
+                $this->config['composer']['extra']['version']);
             exit(0);
         }
     }

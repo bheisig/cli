@@ -42,7 +42,7 @@ class Init extends Command {
     public function execute() {
         $this->log->info($this->getDescription());
 
-        $appName = $this->config['composer']['name'];
+        $appName = $this->config['composer']['extra']['name'];
 
         switch ($_SERVER['USER']) {
             case 'root':

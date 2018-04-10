@@ -1,6 +1,5 @@
 {
-    "name": "helloworld",
-    "version": "0.1-dev",
+    "name": "bheisig/helloworld",
     "description": "Example app for bheisig\\cli",
     "type": "library",
     "keywords": [
@@ -24,13 +23,14 @@
         "php": ">=7.0",
         "bheisig/cli": "@DEV"
     },
-    "require-dev": {
-        "clue/phar-composer": "^1.0"
-    },
     "autoload": {
         "psr-4": {
             "hello\\world\\": "src/"
         }
     },
-    "bin": ["bin/helloworld"]
+    "bin": ["bin/helloworld"],
+    "extra": {
+        "name": "helloworld",
+        "version": "0.1.0-dev"
+    }
 }
