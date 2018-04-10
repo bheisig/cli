@@ -693,13 +693,15 @@ class App {
      */
     protected function array_merge_recursive_overwrite(array $array1, array $array2, array $array = []) {
         $arrays = func_get_args();
-        $merged = array();
+        $merged = [];
+
         while ($arrays) {
             $array = array_shift($arrays);
-            assert('is_array($array)');
-            if (!$array) {
+
+            if (!is_array($array)) {
                 continue;
             }
+
             foreach ($array as $key => $value) {
                 if (is_string($key)) {
                     if (is_array($value) && array_key_exists($key, $merged) && is_array($merged[$key])) {
@@ -707,11 +709,12 @@ class App {
                     } else {
                         $merged[$key] = $value;
                     }
-                } else {
+                } else if (!in_array($value, $merged)) {
                     $merged[] = $value;
                 }
             }
         }
+
         return $merged;
     }
 
