@@ -415,9 +415,12 @@ class App {
             // Default settings…
             ->addConfigFile($this->config['appDir'] . '/config/default.json', true)
             // …overwritten by system-wide settings…
-            ->addConfigFile('/etc/' . $appName . '/config.json', true)
+            ->addConfigFile('/etc/' . $appName . '/config.json', true);
+
+        if ($_SERVER['USER'] !== 'root') {
             // …overwritten by user settings:
-            ->addConfigFile($_SERVER['HOME'] . '/.' . $appName . '/config.json', true);
+            $this->addConfigFile($_SERVER['HOME'] . '/.' . $appName . '/config.json', true);
+        }
 
         return $this;
     }
