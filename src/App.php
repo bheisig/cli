@@ -606,7 +606,7 @@ class App {
         $this->config['composer'] = JSONFile::read($composerFile);
 
         if (!array_key_exists('extra', $this->config['composer']) ||
-            !is_array($this->config['extra'])) {
+            !is_array($this->config['composer']['extra'])) {
             throw new \Exception(sprintf(
                 'Missing "extra" in composer file "%s"',
                 $composerFile
