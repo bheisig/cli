@@ -51,7 +51,7 @@ class PrintConfig extends Command {
             $config['composer']
         );
 
-        IO::out(json_encode($config, JSON_PRETTY_PRINT));
+        IO::out(json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
         return $this;
     }

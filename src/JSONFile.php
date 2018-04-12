@@ -80,7 +80,7 @@ class JSONFile {
      * @throws \Exception on error
      */
     public static function write($file, array $content) {
-        $jsonString = json_encode($content, JSON_PRETTY_PRINT);
+        $jsonString = json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
         if ($jsonString === false) {
             throw new \Exception('Unable to convert array to JSON string');
