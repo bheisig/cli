@@ -84,6 +84,13 @@ class App {
      * @throws \Exception on error
      */
     public function __construct() {
+        if (PHP_SAPI !== 'cli') {
+            throw new \Exception(sprintf(
+                'This application must be invoked by the CLI interpreter of PHP, not the %s SAPI',
+                PHP_SAPI
+            ));
+        }
+
         $this
             ->addCommand('help', __NAMESPACE__ . '\\Command\\Help', 'Show this help')
             ->addCommand('list', __NAMESPACE__ . '\\Command\\ListCommands', 'List all commands')
