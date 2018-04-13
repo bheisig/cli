@@ -18,11 +18,22 @@
         "source": "https://github.com/bheisig/cli"
     },
     "require": {
-        "php": ">=5.6.0"
+        "php": ">=5.6.0",
+        "ext-bz2": "*",
+        "ext-date": "*",
+        "ext-filter": "*",
+        "ext-json": "*",
+        "ext-Phar": "*",
+        "ext-posix": "*"
     },
     "require-dev": {
+        "macfja/phar-builder": "^0.2.6",
+        "theseer/phpdox": "^0.11.0",
+        "phploc/phploc": "^4.0",
+        "phpmd/phpmd" : "@stable",
         "phpstan/phpstan": "^0.9.2",
-        "sebastian/phpcpd": ">=3.0.1"
+        "sebastian/phpcpd": ">=3.0.1",
+        "sensiolabs/security-checker": "^4.1"
     },
     "autoload": {
         "psr-4": {
@@ -30,11 +41,33 @@
         }
     },
     "scripts": {
-        "phpcpd": [
-            "./vendor/bin/phpcpd src/"
-        ],
-        "phpstan": [
-            "./vendor/bin/phpstan analyze -l max src"
+        "gitstats": "gitstats -c project_name=`composer config name` . gitstats",
+        "gource": "gource -1280x720 --seconds-per-day 3 --auto-skip-seconds 1 --title `composer config name`",
+        "phpcpd": "./vendor/bin/phpcpd src/",
+        "phpdox": "./vendor/bin/phpdox",
+        "phploc": "./vendor/bin/phploc --exclude=vendor --exclude=docs --exclude=example .",
+        "phpmd": "./vendor/bin/phpmd src text cleancode,codesize,controversial,design,naming,unusedcode",
+        "phpstan": "./vendor/bin/phpstan analyze -l max src",
+        "security-checker": "./vendor/bin/security-checker security:check ./composer.lock",
+        "syntax-check": "php -l src/",
+        "ci": [
+            "@composer syntax-check",
+            "@composer validate",
+            "@composer security-checker",
+            "@composer phpcpd",
+            "@composer phpstan"
         ]
+    },
+    "scripts-descriptions": {
+        "ci": "Perform continuous integration tasks",
+        "gitstats": "Create Git statistics",
+        "gource": "Visualize Git history",
+        "phpcpd": "Detect copy/paste in source code",
+        "phpdox": "Create source code documentation",
+        "phploc": "Print source code statistics",
+        "phpmd": "Detect mess in source code",
+        "phpstan": "Analyze source code",
+        "security-checker": "Look for dependencies with known security vulnerabilities",
+        "syntax-check": "Check syntax of source code"
     }
 }
