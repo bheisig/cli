@@ -57,10 +57,12 @@ class Init extends Command {
 
         $schemaFile = $this->config['appDir'] . '/config/schema.json';
 
+        $this->log->notice('This command will ask you several questions.');
         $this->log->notice(
-            'This command will ask you several questions. After that a configuration file will be written to %s. If you are unsure what to do please refer to the documentation.',
+            'After that a configuration file will be written to %s.',
             $configFile
         );
+        $this->log->notice('If you are unsure what to do please refer to the documentation.');
 
         if (file_exists($configFile)) {
             $this->log->notice('Configuration file already exists.');
@@ -207,7 +209,7 @@ Validate your configuration settings with:
         $question = 'This part is optional. Do you like to configure it? [y|N]:';
         $answer = strtolower(IO::in($question));
 
-        switch($answer) {
+        switch ($answer) {
             case 'yes':
             case 'y':
             case '1':
@@ -255,28 +257,30 @@ Validate your configuration settings with:
         if (strlen($answer) === 0 && $required && !isset($default)) {
             $this->log->warning('This setting is required. You need to set a value.');
             return $this->askForString($key, $required, $default, $values, $minLength);
-        } else if (strlen($answer) === 0 && isset($default)) {
+        } elseif (strlen($answer) === 0 && isset($default)) {
             return $default;
-        } else if (count($values) && !in_array($answer, $values)) {
+        } elseif (count($values) && !in_array($answer, $values)) {
             $this->log->warning(
                 'Wrong answer. Here are your options: %s',
                 implode(', ', $values)
             );
             return $this->askForString($key, $required, $default, $values, $minLength);
-        } else if (strlen($answer) > 0 && strlen($answer) < $minLength) {
+        } elseif (strlen($answer) > 0 && strlen($answer) < $minLength) {
             $this->log->warning(
                 'Value must have at least %s character(s)',
                 $minLength
             );
             return $this->askForString($key, $required, $default, $values, $minLength);
-        } else if (strlen($answer) > 0) {
+        } elseif (strlen($answer) > 0) {
             return $answer;
         }
 
         return null;
     }
 
-    protected function askForInteger($key, $required = false, $default = null, $gt = null, $ge = null, $lt = null, $le = null) {
+    protected function askForInteger(
+        $key, $required = false, $default = null, $gt = null, $ge = null, $lt = null, $le = null
+    ) {
         $question = sprintf(
             'What is the value for configuration setting "%s"?',
             $key
@@ -293,24 +297,24 @@ Validate your configuration settings with:
         if (strlen($answer) === 0 && $required && !isset($default)) {
             $this->log->warning('This setting is required. You need to set a value.');
             return $this->askForInteger($key, $required, $default, $gt, $ge, $lt, $le);
-        } else if (strlen($answer) === 0 && isset($default)) {
+        } elseif (strlen($answer) === 0 && isset($default)) {
             return $default;
-        } else if (strlen($answer) > 0 && !is_numeric($answer)) {
+        } elseif (strlen($answer) > 0 && !is_numeric($answer)) {
             $this->log->warning('This setting must be an integer value.');
             return $this->askForInteger($key, $required, $default, $gt, $ge, $lt, $le);
-        } else if (strlen($answer) > 0 && isset($gt) && $int <= $gt) {
+        } elseif (strlen($answer) > 0 && isset($gt) && $int <= $gt) {
             $this->log->warning('This setting must be greater than %s.', $gt);
             return $this->askForInteger($key, $required, $default, $gt, $ge, $lt, $le);
-        } else if (strlen($answer) > 0 && isset($ge) && $int < $ge) {
+        } elseif (strlen($answer) > 0 && isset($ge) && $int < $ge) {
             $this->log->warning('This setting must be greater equal %s.', $ge);
             return $this->askForInteger($key, $required, $default, $gt, $ge, $lt, $le);
-        } else if (strlen($answer) > 0 && isset($lt) && $int >= $lt) {
+        } elseif (strlen($answer) > 0 && isset($lt) && $int >= $lt) {
             $this->log->warning('This setting must be less than %s.', $lt);
             return $this->askForInteger($key, $required, $default, $gt, $ge, $lt, $le);
-        } else if (strlen($answer) > 0 && isset($le) && $int > $le) {
+        } elseif (strlen($answer) > 0 && isset($le) && $int > $le) {
             $this->log->warning('This setting must be less equal %s.', $le);
             return $this->askForInteger($key, $required, $default, $gt, $ge, $lt, $le);
-        } else if (strlen($answer) > 0) {
+        } elseif (strlen($answer) > 0) {
             return $int;
         }
 
@@ -336,7 +340,7 @@ Validate your configuration settings with:
 
         $answer = strtolower(IO::in($question));
 
-        switch($answer) {
+        switch ($answer) {
             case 'yes':
             case 'y':
             case '1':
@@ -350,7 +354,7 @@ Validate your configuration settings with:
             case '':
                 if (isset($default)) {
                     return $default;
-                } else if ($required) {
+                } elseif ($required) {
                     $this->log->warning('Excuse me, what do you mean?');
 
                     return $this->askForBoolean($key, $required, $default);
@@ -368,7 +372,9 @@ Validate your configuration settings with:
         return null;
     }
 
-    protected function askForArray($key, $required = false, $default = null, array $values = [], $minCount = 0, $items = 'string', $minLength = 0) {
+    protected function askForArray(
+        $key, $required = false, $default = null, array $values = [], $minCount = 0, $items = 'string', $minLength = 0
+    ) {
         $question = sprintf(
             'What is the value for configuration setting "%s"',
             $key
@@ -392,7 +398,7 @@ Validate your configuration settings with:
         if (strlen($answer) === 0 && $required && !isset($default)) {
             $this->log->warning('This setting is required. You need to set a value.');
             return $this->askForArray($key, $required, $default, $values, $minCount, $items, $minLength);
-        } else if (strlen($answer) === 0 && isset($default)) {
+        } elseif (strlen($answer) === 0 && isset($default)) {
             return $default;
         }
 
@@ -429,7 +435,15 @@ Validate your configuration settings with:
                                 $items,
                                 implode(', ', $values)
                             );
-                            return $this->askForArray($key, $required, $default, $values, $minCount, $items, $minLength);
+                            return $this->askForArray(
+                                $key,
+                                $required,
+                                $default,
+                                $values,
+                                $minCount,
+                                $items,
+                                $minLength
+                            );
                         }
                         break;
                 }
@@ -498,7 +512,7 @@ Validate your configuration settings with:
             case '':
                 if (isset($default)) {
                     return $default;
-                } else if ($required) {
+                } elseif ($required) {
                     $this->log->warning('Excuse me, what do you mean?');
 
                     return $this->askForMixed($key, $required, $default, $values);
@@ -576,7 +590,8 @@ Validate your configuration settings with:
      * @return self Returns itself
      */
     public function printUsage() {
-        $this->log->info('Usage: %1$s %2$s
+        $this->log->info(
+            'Usage: %1$s %2$s
 
 %3$s',
             $this->config['args'][0],

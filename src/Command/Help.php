@@ -45,11 +45,11 @@ class Help extends Command {
         if (!array_key_exists('command', $this->config)) {
             // app help:
             $this->printUsage();
-        } else if ($this->config['command'] === 'help' &&
+        } elseif ($this->config['command'] === 'help' &&
             count($this->config['args']) === 2) {
             // app help:
             $this->printUsage();
-        } else if ($this->config['command'] === 'help' &&
+        } elseif ($this->config['command'] === 'help' &&
             isset($command)) {
             // app help COMMAND:
             $class = $this->config['commands'][$command]['class'];
@@ -58,7 +58,7 @@ class Help extends Command {
             $instance = new $class($this->config, $this->log);
 
             $instance->printUsage();
-        } else if (!isset($command) &&
+        } elseif (!isset($command) &&
             count($this->config['args']) > 2 &&
             strpos($this->config['args'][2], '-') === 0) {
             // app help --option:
@@ -91,7 +91,8 @@ class Help extends Command {
             $commandList .= PHP_EOL . '    ' . $command . str_pad(' ', $separator) . $commandOptions['description'];
         }
 
-        $this->log->info('%3$s
+        $this->log->info(
+            '%3$s
         
 Usage: %1$s [COMMAND] [OPTIONS]
 
@@ -128,7 +129,8 @@ Common options:
     --version               Print version information',
             $this->config['args'][0],
             $commandList,
-            $this->config['composer']['description']);
+            $this->config['composer']['description']
+        );
 
         return $this;
     }

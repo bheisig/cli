@@ -92,11 +92,31 @@ class App {
         }
 
         $this
-            ->addCommand('help', __NAMESPACE__ . '\\Command\\Help', 'Show this help')
-            ->addCommand('list', __NAMESPACE__ . '\\Command\\ListCommands', 'List all commands')
-            ->addCommand('init', __NAMESPACE__ . '\\Command\\Init', 'Create/update user-defined or system-wide configuration settings')
-            ->addCommand('configtest', __NAMESPACE__ . '\\Command\\ConfigTest', 'Validate configuration settings')
-            ->addCommand('print-config', __NAMESPACE__ . '\\Command\\PrintConfig', 'Print current configuration settings')
+            ->addCommand(
+                'help',
+                __NAMESPACE__ . '\\Command\\Help',
+                'Show this help'
+            )
+            ->addCommand(
+                'list',
+                __NAMESPACE__ . '\\Command\\ListCommands',
+                'List all commands'
+            )
+            ->addCommand(
+                'init',
+                __NAMESPACE__ . '\\Command\\Init',
+                'Create/update user-defined or system-wide configuration settings'
+            )
+            ->addCommand(
+                'configtest',
+                __NAMESPACE__ . '\\Command\\ConfigTest',
+                'Validate configuration settings'
+            )
+            ->addCommand(
+                'print-config',
+                __NAMESPACE__ . '\\Command\\PrintConfig',
+                'Print current configuration settings'
+            )
             ->addOption('c', 'config', self::OPTION_NOT_REQUIRED)
             ->addOption('h', 'help', self::NO_VALUE)
             ->addOption(null, 'no-colors', self::NO_VALUE)
@@ -148,7 +168,7 @@ class App {
      * @return self Returns itself
      */
     public function addConfigSettings(array $settings) {
-        $this->config = $this->array_merge_recursive_overwrite(
+        $this->config = $this->arrayMergeRecursiveOverwrite(
             $this->config,
             $settings
         );
@@ -327,7 +347,7 @@ class App {
                                         '',
                                         $this->config['args'][$i]
                                     );
-                                } else if (array_key_exists(($i + 1), $this->config['args']) &&
+                                } elseif (array_key_exists(($i + 1), $this->config['args']) &&
                                     substr($this->config['args'][$i + 1], 0, strlen($prefix)) !== $prefix) {
                                     $value = $this->config['args'][$i + 1];
                                 } else {
@@ -345,7 +365,7 @@ class App {
                                 $this->config['options'][$name],
                                 $value
                             ];
-                        } else if (array_key_exists($name, $this->config['options']) &&
+                        } elseif (array_key_exists($name, $this->config['options']) &&
                             is_array($this->config['options'][$name])) {
                             $this->config['options'][$name][] = $value;
                         } else {
@@ -366,12 +386,12 @@ class App {
                         $option['short'],
                         $option['long']
                     );
-                } else if (array_key_exists('short', $option) && !array_key_exists('long', $option)) {
+                } elseif (array_key_exists('short', $option) && !array_key_exists('long', $option)) {
                     $message = sprintf(
                         'Required option "-%s" is missing',
                         $option['short']
                     );
-                } else if (!array_key_exists('short', $option) && array_key_exists('long', $option)) {
+                } elseif (!array_key_exists('short', $option) && array_key_exists('long', $option)) {
                     $message = sprintf(
                         'Required option "--%s" is missing',
                         $option['long']
@@ -444,7 +464,7 @@ class App {
 
         foreach ($this->config['options'] as $option => $value) {
             if (in_array($option, ['c', 'config'])) {
-                switch(gettype($value)) {
+                switch (gettype($value)) {
                     case 'string':
                         $additionalConfigFiles[] = $value;
                         break;
@@ -490,7 +510,7 @@ class App {
 
         foreach ($this->config['options'] as $option => $value) {
             if (in_array($option, ['s', 'setting'])) {
-                switch(gettype($value)) {
+                switch (gettype($value)) {
                     case 'string':
                         $newSettings[] = $value;
                         break;
@@ -533,9 +553,9 @@ class App {
             if (is_numeric($value)) {
                 // Returns int or float:
                 $value = $value + 0;
-            } else if (strtolower($value) === 'true') {
+            } elseif (strtolower($value) === 'true') {
                 $value = true;
-            } else if (strtolower($value) === 'false') {
+            } elseif (strtolower($value) === 'false') {
                 $value = false;
             }
 
@@ -586,7 +606,7 @@ class App {
         if (array_key_exists('q', $this->config['options']) ||
             array_key_exists('quiet', $this->config['options'])) {
             $this->config['log']['verbosity'] = Log::FATAL | Log::ERROR;
-        } else if (array_key_exists('v', $this->config['options']) ||
+        } elseif (array_key_exists('v', $this->config['options']) ||
             array_key_exists('verbose', $this->config['options'])) {
             $this->config['log']['verbosity'] = Log::ALL;
         }
@@ -649,7 +669,8 @@ class App {
             $this->log->info(
                 '%s %s',
                 $this->config['composer']['extra']['name'],
-                $this->config['composer']['extra']['version']);
+                $this->config['composer']['extra']['version']
+            );
             exit(0);
         }
     }
@@ -712,7 +733,7 @@ class App {
      *
      * @return array Combined array
      */
-    protected function array_merge_recursive_overwrite(array $array1, array $array2, array $array = []) {
+    protected function arrayMergeRecursiveOverwrite(array $array1, array $array2, array $array = []) {
         $arrays = func_get_args();
         $merged = [];
 
@@ -730,7 +751,7 @@ class App {
                     } else {
                         $merged[$key] = $value;
                     }
-                } else if (!in_array($value, $merged)) {
+                } elseif (!in_array($value, $merged)) {
                     $merged[] = $value;
                 }
             }

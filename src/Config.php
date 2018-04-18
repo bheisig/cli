@@ -70,7 +70,7 @@ class Config {
                     'Missing configuration setting "%s"',
                     $key
                 );
-            } else if ($rule['required'] === false &&
+            } elseif ($rule['required'] === false &&
                 !array_key_exists($rule['key'], $settings)) {
                 continue;
             }
@@ -119,7 +119,8 @@ class Config {
                                     if (array_key_exists('minLength', $rule)) {
                                         if (strlen($item) < $rule['minLength']) {
                                             $errors[] = sprintf(
-                                                'Configuration setting "%s" has a too short string "%s". Minimum length is %s character(s).',
+                                                'Configuration setting "%s" has a too short string "%s". ' .
+                                                'Minimum length is %s character(s).',
                                                 $key,
                                                 $item,
                                                 $rule['minLength']

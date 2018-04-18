@@ -62,7 +62,8 @@ class PrintConfig extends Command {
      * @return self Returns itself
      */
     public function printUsage() {
-        $this->log->info('Usage: %1$s %2$s [OPTIONS]
+        $this->log->info(
+            'Usage: %1$s %2$s [OPTIONS]
 
 %3$s
 
