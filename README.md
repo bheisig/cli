@@ -32,7 +32,7 @@ The goal is to build intuitive CLI tools. Nobody likes to read documentation, so
 
 ##  Example
 
-For a simple application look at the [`example`](example/) folder.
+For a simple application look at the `example/` folder.
 
 
 ##  Requirements
@@ -46,7 +46,7 @@ For a simple application look at the [`example`](example/) folder.
 Go to your project folder and require this framework via Composer:
 
 ~~~ {.bash}
-composer require "bheisig/cli=@DEV"
+composer require "bheisig/cli=0.1"
 ~~~
 
 
