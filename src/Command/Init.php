@@ -44,18 +44,17 @@ class Init extends Command {
 
         $appName = $this->config['composer']['extra']['name'];
 
-        switch ($_SERVER['USER']) {
-            case 'root':
-                $configDir = '/etc/' . $appName;
-                break;
-            default:
-                $configDir = $_SERVER['HOME'] . '/.' . $appName;
-                break;
+        if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
+            $configDir = sprintf('%s\\%s', $_SERVER['LOCALAPPDATA'], $appName);
+        } elseif ($_SERVER['USER'] === 'root') {
+            $configDir = sprintf('/etc/%s', $appName);
+        } else {
+            $configDir = sprintf('%s/.%s', $_SERVER['HOME'], $appName);
         }
 
-        $configFile = $configDir . '/config.json';
+        $configFile = $configDir . DIRECTORY_SEPARATOR . 'config.json';
 
-        $schemaFile = $this->config['appDir'] . '/config/schema.json';
+        $schemaFile = $this->config['appDir'] . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'schema.json';
 
         $this->log->notice('This command will ask you several questions.');
         $this->log->notice(
@@ -83,7 +82,8 @@ class Init extends Command {
 
         if (file_exists($configFile)) {
             $backupFile = sprintf(
-                '%s/config_%s.json',
+                '%s%sconfig_%s.json',
+                DIRECTORY_SEPARATOR,
                 $configDir,
                 date('Y-m-d_His')
             );
