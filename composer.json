@@ -21,8 +21,7 @@
         "php": ">=5.6.0",
         "ext-date": "*",
         "ext-filter": "*",
-        "ext-json": "*",
-        "ext-posix": "*"
+        "ext-json": "*"
     },
     "require-dev": {
         "phploc/phploc": "^4.0",

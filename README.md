@@ -20,6 +20,7 @@ The goal is to build intuitive CLI tools. Nobody likes to read documentation, so
 *   Perfectly suited to create a single binary file from your application
 *   Simple interface
 *   Separate your features by commands
+*   Runs on POSIX-like systems (GNU/Linux, MacOS, …) and Windows
 *   Error/exception handling
 *   Optional colored output based on log level
 *   Log to standard or error output
@@ -38,7 +39,7 @@ For a simple application look at the `example/` folder.
 ##  Requirements
 
 *   PHP, version 5.6 or higher (7.1 is recommended)
-*   PHP modules `cli` and `json`
+*   PHP modules `cli`, `date`, `filter` and `json`
 
 
 ##  Installation

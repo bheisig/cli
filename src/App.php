@@ -76,14 +76,22 @@ class App {
     /**
      * Constructor
      *
-     * Add pre-defined commands "help" and "list" and pre-defined options "-c"/"--config", "-h"/"--help", "--no-colors",
-     * "-q"/"--quiet", "-v"/"--verbose", "version" and "-s/--setting"
-     *
-     * Initialize logger with default values
-     *
      * @throws \Exception on error
      */
     public function __construct() {
+        $this
+            ->checkEnvironment()
+            ->invokeStandardCommands()
+            ->invokeStandardOptions()
+            ->invokeLogging();
+    }
+
+    /**
+     * @return self Returns itself
+     *
+     * @throws \Exception on error
+     */
+    protected function checkEnvironment() {
         if (PHP_SAPI !== 'cli') {
             throw new \Exception(sprintf(
                 'This application must be invoked by the CLI interpreter of PHP, not the %s SAPI',
@@ -91,7 +99,16 @@ class App {
             ));
         }
 
-        $this
+        return $this;
+    }
+
+    /**
+     * Invoke standard commands
+     *
+     * @return self Returns itself
+     */
+    protected function invokeStandardCommands() {
+        return $this
             ->addCommand(
                 'help',
                 __NAMESPACE__ . '\\Command\\Help',
@@ -116,7 +133,18 @@ class App {
                 'print-config',
                 __NAMESPACE__ . '\\Command\\PrintConfig',
                 'Print current configuration settings'
-            )
+            );
+    }
+
+    /**
+     * Invoke standard options
+     *
+     * @return self Returns itself
+     *
+     * @throws \Exception on error
+     */
+    protected function invokeStandardOptions() {
+        return $this
             ->addOption('c', 'config', self::OPTION_NOT_REQUIRED)
             ->addOption('h', 'help', self::NO_VALUE)
             ->addOption(null, 'no-colors', self::NO_VALUE)
@@ -124,13 +152,22 @@ class App {
             ->addOption('v', 'verbose', self::NO_VALUE)
             ->addOption(null, 'version', self::NO_VALUE)
             ->addOption('s', 'setting', self::OPTION_NOT_REQUIRED);
+    }
 
+    /**
+     * Initialize logger with default values
+     *
+     * @return self Returns itself
+     */
+    protected function invokeLogging() {
         $this->config['log'] = [
             'colorize' => true,
             'verbosity' => Log::ALL | ~Log::DEBUG
         ];
 
         $this->log = new Log();
+
+        return $this;
     }
 
     /**
@@ -438,15 +475,23 @@ class App {
     protected function loadOptionalConfigFiles() {
         $appName = $this->config['composer']['extra']['name'];
 
+        if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
+            $systemSettings = sprintf('C:\\tools\\%s\\config.json', $appName);
+            $userSettings = sprintf('%s\\%s\\config.json', $_SERVER['LOCALAPPDATA'], $appName);
+        } else {
+            $systemSettings = sprintf('/etc/%s/config.json', $appName);
+            $userSettings = sprintf('%s/.%s/config.json', $_SERVER['HOME'], $appName);
+        }
+
         $this
             // Default settings…
             ->addConfigFile($this->config['appDir'] . '/config/default.json', true)
             // …overwritten by system-wide settings…
-            ->addConfigFile('/etc/' . $appName . '/config.json', true);
+            ->addConfigFile($systemSettings, true);
 
-        if ($_SERVER['USER'] !== 'root') {
-            // …overwritten by user settings:
-            $this->addConfigFile($_SERVER['HOME'] . '/.' . $appName . '/config.json', true);
+        // …overwritten by user settings:
+        if (strtolower(substr(PHP_OS, 0, 3)) === 'win' || $_SERVER['USER'] !== 'root') {
+            $this->addConfigFile($userSettings, true);
         }
 
         return $this;

@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ##  [Unreleased]
 
 
+### Added
+
+-   Support on Windows operating systems
+
+
 ### Fixed
 
 -   Let user overwrite a configuration setting if it is an indexed array
