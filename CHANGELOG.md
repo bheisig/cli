@@ -8,7 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ##  [Unreleased]
 
-_tbd_
+
+### Fixed
+
+-   Let user overwrite a configuration setting if it is an indexed array
 
 
 ##  0.1 – 2018-04-24

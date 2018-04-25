@@ -746,9 +746,20 @@ class App {
 
             foreach ($array as $key => $value) {
                 if (is_string($key)) {
-                    if (is_array($value) && array_key_exists($key, $merged) && is_array($merged[$key])) {
-                        $merged[$key] = call_user_func([$this, __FUNCTION__], $merged[$key], $value);
+                    // Merged keys are both arrays, last one has values:
+                    if (is_array($value) &&
+                        array_key_exists($key, $merged) &&
+                        is_array($merged[$key]) &&
+                        count($value) === 0) {
+                        if (array_keys($value) !== range(0, count($value) - 1)) {
+                            // Associative array or zero-indexed, but not sequential array:
+                            $merged[$key] = call_user_func([$this, __FUNCTION__], $merged[$key], $value);
+                        } else {
+                            // Zero-indexed and sequential array:
+                            $merged[$key] = $value;
+                        }
                     } else {
+                        // Value either not an array or an empty array or original is not an array:
                         $merged[$key] = $value;
                     }
                 } elseif (!in_array($value, $merged)) {
