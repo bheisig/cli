@@ -70,6 +70,7 @@ class Config {
                     'Missing configuration setting "%s"',
                     $key
                 );
+                continue;
             } elseif ($rule['required'] === false &&
                 !array_key_exists($rule['key'], $settings)) {
                 continue;

@@ -795,7 +795,7 @@ class App {
                     if (is_array($value) &&
                         array_key_exists($key, $merged) &&
                         is_array($merged[$key]) &&
-                        count($value) === 0) {
+                        count($value) > 0) {
                         if (array_keys($value) !== range(0, count($value) - 1)) {
                             // Associative array or zero-indexed, but not sequential array:
                             $merged[$key] = call_user_func([$this, __FUNCTION__], $merged[$key], $value);
