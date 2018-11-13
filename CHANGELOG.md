@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+-   Print version information with `APP -v` and `APP version`
 -   Support on Windows operating systems
 -   Add PHP extension `calendar` as requirement
 

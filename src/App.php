@@ -133,6 +133,11 @@ class App {
                 'print-config',
                 __NAMESPACE__ . '\\Command\\PrintConfig',
                 'Print current configuration settings'
+            )
+            ->addCommand(
+                'version',
+                __NAMESPACE__ . '\\Command\\Version',
+                'Print version information'
             );
     }
 
@@ -301,10 +306,6 @@ class App {
      */
     public function run() {
         try {
-            /**
-             * Start you engine…
-             */
-
             $this
                 ->loadComposerFile()
                 ->loadArgs()
@@ -312,35 +313,58 @@ class App {
                 ->loadOptionalConfigFiles()
                 ->loadAdditionalConfigFiles()
                 ->addRuntimeSettings()
-                ->configureLogger();
-
-            /**
-             * Try to find out what the user wants:
-             */
-
-            $this->printVersion();
-
-            $this->runCommand();
-
-            $this->callHelp();
-
-            /**
-             * Ooops, went to far…
-             */
-
-            throw new \Exception('Bad request', 400);
+                ->configureLogger()
+                ->satisfyUserChoice();
         } catch (\Exception $e) {
             $this->log->fatal($e->getMessage());
 
             if ($e->getCode() === 400) {
-                $class = $this->config['commands']['help']['class'];
-                /** @var Executes $help */
-                $help = new $class($this->config, $this->log);
-                $help->setup()->execute()->tearDown();
+                $this->executeCommand('help');
             }
 
-            exit(1);
+            $this->close(1);
         }
+    }
+
+    /**
+     * Try to find out what the user wants
+     *
+     * @throws \Exception on error
+     */
+    protected function satisfyUserChoice() {
+        if (array_key_exists('version', $this->config['options'])) {
+            $this->executeCommand('version');
+            $this->close();
+        }
+
+        if (count($this->config['args']) === 2 &&
+            array_key_exists('v', $this->config['options'])) {
+            $this->executeCommand('version');
+            $this->close();
+        }
+
+        if (count($this->config['args']) < 2) {
+            throw new \Exception('Too few arguments', 400);
+        }
+
+        foreach ($this->config['args'] as $arg) {
+            if (array_key_exists($arg, $this->config['commands'])) {
+                $this->executeCommand($arg);
+                $this->close();
+            }
+        }
+
+        if (array_key_exists('h', $this->config['options']) ||
+            array_key_exists('help', $this->config['options'])) {
+            $this->executeCommand('help');
+            $this->close();
+        }
+
+        /**
+         * Ooops, went to far…
+         */
+
+        throw new \Exception('Bad request', 400);
     }
 
     /**
@@ -451,10 +475,6 @@ class App {
      */
     protected function loadArgs() {
         $this->config['args'] = $GLOBALS['argv'];
-
-        if (count($this->config['args']) < 2) {
-            throw new \Exception('Too few arguments', 400);
-        }
 
         return $this;
     }
@@ -707,66 +727,46 @@ class App {
     }
 
     /**
-     * Print version information
-     */
-    protected function printVersion() {
-        if (array_key_exists('version', $this->config['options'])) {
-            $this->log->info(
-                '%s %s',
-                $this->config['composer']['extra']['name'],
-                $this->config['composer']['extra']['version']
-            );
-            exit(0);
-        }
-    }
-
-    /**
-     * Call command "help"
+     * Execute command
+     *
+     * @param string $command Command name
      *
      * @throws \Exception on error
      */
-    protected function callHelp() {
-        if (array_key_exists('h', $this->config['options']) ||
-            array_key_exists('help', $this->config['options'])) {
-            $class = $this->config['commands']['help']['class'];
-            /** @var Executes $help */
-            $help = new $class($this->config, $this->log);
-            $help->setup()->execute()->tearDown();
-            exit(0);
+    protected function executeCommand($command) {
+        $class = $this->config['commands'][$command]['class'];
+
+        if (!class_exists($class) ||
+            !is_subclass_of($class, __NAMESPACE__ . '\\Command\\Executes')
+        ) {
+            throw new \RuntimeException(sprintf(
+                'Command "%s" not found',
+                $command
+            ));
         }
-    }
 
-    /**
-     * Execute command given in the arguments and exit application
-     *
-     * @throws \Exception on error
-     */
-    protected function runCommand() {
-        foreach ($this->config['args'] as $arg) {
-            if (array_key_exists($arg, $this->config['commands'])) {
-                $class = $this->config['commands'][$arg]['class'];
+        $this->config['command'] = $command;
 
-                $this->config['command'] = $arg;
+        /** @var Executes $command */
+        $command = new $class($this->config, $this->log);
 
-                if (class_exists($class) &&
-                    is_subclass_of($class, __NAMESPACE__ . '\\Command\\Executes')
-                ) {
-                    /** @var Executes $command */
-                    $command = new $class($this->config, $this->log);
-
-                    foreach ($this->config['args'] as $help) {
-                        if (in_array($help, ['-h', '--help'])) {
-                            $command->printUsage();
-                            exit(0);
-                        }
-                    }
-
-                    $command->setup()->execute()->tearDown();
-
-                    exit(0);
-                }
+        foreach ($this->config['args'] as $help) {
+            if (in_array($help, ['-h', '--help'])) {
+                $command->printUsage();
+                return;
             }
         }
+
+        $command->setup()->execute()->tearDown();
+    }
+
+    /**
+     * Close application
+     *
+     * @param int $exitCode Defaults to 0
+     */
+    protected function close($exitCode = 0) {
+        exit($exitCode);
     }
 
     /**
