@@ -107,7 +107,14 @@ class Log {
     protected $colorize = true;
 
     /**
-     * Bash color codes
+     * Print to standard output or error?
+     *
+     * @var string Default to standard output
+     */
+    protected $output = 'STDOUT';
+
+    /**
+     * ANSI color codes
      *
      * @var array
      */
@@ -116,7 +123,6 @@ class Log {
         self::ERROR => '0;31',
         self::WARNING => '1;33',
         self::NOTICE => '1;33',
-        self::INFO => '0;32',
         self::DEBUG => '0;37'
     ];
 
@@ -135,18 +141,44 @@ class Log {
      * Set verbosity
      *
      * @param int $verbosity Verbosity
+     *
+     * @return self Returns itself
      */
     public function setVerbosity($verbosity) {
         $this->verbosity = $verbosity;
+        return $this;
     }
 
     /**
      * Colorize output?
      *
      * @param bool $colorize Decision
+     *
+     * @return self Returns itself
      */
     public function printColors($colorize) {
         $this->colorize = $colorize;
+        return $this;
+    }
+
+    /**
+     * Print the following events as output to STDOUT
+     *
+     * @return self Returns itself
+     */
+    public function printAsOutput() {
+        $this->output = 'STDOUT';
+        return $this;
+    }
+
+    /**
+     * Print the following events as messages to STDERR
+     *
+     * @return self Returns itself
+     */
+    public function printAsMessage() {
+        $this->output = 'STDERR';
+        return $this;
     }
 
     /**
@@ -155,6 +187,8 @@ class Log {
      * @param int $level Event level. One of the following class constants: DEBUG, INFO, WARNING, ERROR or FATAL.
      * @param string $value What to be formatted
      * @param mixed $args (Optional) One or more arguments
+     *
+     * @return self Returns itself
      *
      * @see sprintf()
      */
@@ -170,11 +204,38 @@ class Log {
             }
 
             if ($this->colorize) {
-                $message = "\e[" . $this->colors[$level] . 'm' . $message . "\033[0m";
+                switch ($level) {
+                    case self::FATAL:
+                        $message = "<fatal>$message</fatal>";
+                        break;
+                    case self::ERROR:
+                        $message = "<error>$message</error>";
+                        break;
+                    case self::WARNING:
+                        $message = "<warning>$message</warning>";
+                        break;
+                    case self::NOTICE:
+                        $message = "<notice>$message</notice>";
+                        break;
+                    case self::DEBUG:
+                        $message = "<debug>$message</debug>";
+                        break;
+                }
             }
 
-            IO::out($message);
+            $message = $this->formatText($message);
+
+            switch ($this->output) {
+                case 'STDOUT':
+                    IO::out($message);
+                    break;
+                case 'STDERR':
+                    IO::err($message);
+                    break;
+            }
         }
+
+        return $this;
     }
 
     /**
@@ -183,11 +244,13 @@ class Log {
      * @param string $value What to be formatted
      * @param mixed $args (Optional) One or more arguments
      *
+     * @return self Returns itself
+     *
      * @see sprintf()
      */
     public function fatal($value, $args = null) {
         $argList = array_merge([self::FATAL], func_get_args());
-        call_user_func_array([__CLASS__, 'event'], $argList);
+        return call_user_func_array([__CLASS__, 'event'], $argList);
     }
 
     /**
@@ -196,11 +259,13 @@ class Log {
      * @param string $value What to be formatted
      * @param mixed $args (Optional) One or more arguments
      *
+     * @return self Returns itself
+     *
      * @see sprintf()
      */
     public function error($value, $args = null) {
         $argList = array_merge([self::ERROR], func_get_args());
-        call_user_func_array([__CLASS__, 'event'], $argList);
+        return call_user_func_array([__CLASS__, 'event'], $argList);
     }
 
     /**
@@ -208,12 +273,14 @@ class Log {
      *
      * @param string $value What to be formatted
      * @param mixed $args (Optional) One or more arguments
+     *
+     * @return self Returns itself
      *
      * @see sprintf()
      */
     public function warning($value, $args = null) {
         $argList = array_merge([self::WARNING], func_get_args());
-        call_user_func_array([__CLASS__, 'event'], $argList);
+        return call_user_func_array([__CLASS__, 'event'], $argList);
     }
 
     /**
@@ -222,11 +289,13 @@ class Log {
      * @param string $value What to be formatted
      * @param mixed $args (Optional) One or more arguments
      *
+     * @return self Returns itself
+     *
      * @see sprintf()
      */
     public function notice($value, $args = null) {
         $argList = array_merge([self::NOTICE], func_get_args());
-        call_user_func_array([__CLASS__, 'event'], $argList);
+        return call_user_func_array([__CLASS__, 'event'], $argList);
     }
 
     /**
@@ -235,11 +304,13 @@ class Log {
      * @param string $value What to be formatted
      * @param mixed $args (Optional) One or more arguments
      *
+     * @return self Returns itself
+     *
      * @see sprintf()
      */
     public function info($value, $args = null) {
         $argList = array_merge([self::INFO], func_get_args());
-        call_user_func_array([__CLASS__, 'event'], $argList);
+        return call_user_func_array([__CLASS__, 'event'], $argList);
     }
 
     /**
@@ -248,11 +319,65 @@ class Log {
      * @param string $value What to be formatted
      * @param mixed $args (Optional) One or more arguments
      *
+     * @return self Returns itself
+     *
      * @see sprintf()
      */
     public function debug($value, $args = null) {
         $argList = array_merge([self::DEBUG], func_get_args());
-        call_user_func_array([__CLASS__, 'event'], $argList);
+        return call_user_func_array([__CLASS__, 'event'], $argList);
+    }
+
+    /**
+     * Print empty line
+     *
+     * @return self Returns itself
+     */
+    public function printEmptyLine() {
+        IO::out('');
+        return $this;
+    }
+
+    /**
+     * Format text
+     *
+     * @param string $text Unformatted text
+     * @return string Formatted text
+     * @throws \RuntimeException on error
+     */
+    protected function formatText($text) {
+        $syntax = [
+            '/\<strong\>(.*)\<\/strong\>/' => "\033[1m$1\033[0m",
+            '/\<u\>(.*)\<\/u\>/' => "\033[4m$1\033[0m",
+            '/\<dim\>(.*)\<\/dim\>/' => "\033[2m$1\033[0m",
+            '/\<fatal\>(.*)\<\/fatal\>/' => "\033[" . $this->colors[self::FATAL] . "m$1\033[0m",
+            '/\<error\>(.*)\<\/error\>/' => "\033[" . $this->colors[self::ERROR] . "m$1\033[0m",
+            '/\<warning\>(.*)\<\/warning\>/' => "\033[" . $this->colors[self::WARNING] . "m$1\033[0m",
+            '/\<notice\>(.*)\<\/notice\>/' => "\033[" . $this->colors[self::NOTICE] . "m$1\033[0m",
+            '/\<debug\>(.*)\<\/debug\>/' => "\033[" . $this->colors[self::DEBUG] . "m$1\033[0m",
+            '/\<red\>(.*)\<\/red\>/' => "\033[31m$1\033[0m",
+            '/\<yellow\>(.*)\<\/yellow\>/' => "\033[33m$1\033[0m",
+            '/\<green\>(.*)\<\/green\>/' => "\033[32m$1\033[0m",
+            '/\<grey\>(.*)\<\/grey\>/' => "\033[37m$1\033[0m",
+        ];
+
+        $replacements = '$1';
+
+        if ($this->colorize) {
+            $replacements = $syntax;
+        }
+
+        $result = preg_replace(
+            array_keys($syntax),
+            $replacements,
+            $text
+        );
+
+        if (!is_string($result)) {
+            throw new \RuntimeException('Unable to format text');
+        }
+
+        return $result;
     }
 
 }
