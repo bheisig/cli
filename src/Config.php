@@ -27,7 +27,7 @@ namespace bheisig\cli;
 /**
  * Configuration settings
  */
-class Config {
+class Config extends \ArrayIterator {
 
     /**
      * Validate configuration settings

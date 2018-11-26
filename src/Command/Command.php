@@ -137,6 +137,8 @@ abstract class Command implements Executes {
      * Looks for a query from given arguments
      *
      * @return string
+     *
+     * @deprecated Use $this->config['arguments'][0] instead!
      */
     protected function getQuery() {
         $query = '';

@@ -310,6 +310,7 @@ class App {
                 ->loadComposerFile()
                 ->loadArgs()
                 ->parseOptions()
+                ->parseArguments()
                 ->loadOptionalConfigFiles()
                 ->loadAdditionalConfigFiles()
                 ->addRuntimeSettings()
@@ -460,6 +461,79 @@ class App {
                 }
 
                 throw new \Exception($message);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Parse given arguments
+     *
+     * @return self Returns itself
+     */
+    protected function parseArguments() {
+        $this->config['arguments'] = [];
+
+        $commandFound =false;
+
+        for ($index = 0; $index < count($this->config['args']); $index++) {
+            // Ignore binary name:
+            if ($index === 0) {
+                continue;
+            }
+
+            $arg = $this->config['args'][$index];
+
+            // Ignore command:
+            if (array_key_exists($arg, $this->config['commands']) &&
+                $commandFound === false) {
+                $commandFound = true;
+                continue;
+            }
+
+            // Ignore options:
+            if (strpos($arg, '--') === 0) {
+                foreach ($this->options as $option) {
+                    if (!array_key_exists('long', $option)) {
+                        continue;
+                    }
+
+                    if ('--' . $option['long'] !== $arg) {
+                        continue;
+                    }
+
+                    if ($option['value'] !== self::NO_VALUE &&
+                        strpos($arg, '--' . $option['long'] . '=') === 0) {
+                        break;
+                    } elseif ($option['value'] === self::NO_VALUE) {
+                        $index += 1;
+                        break;
+                    } else {
+                        $index += 2;
+                        break;
+                    }
+                }
+            } elseif (strpos($arg, '-') === 0) {
+                foreach ($this->options as $option) {
+                    if (!array_key_exists('short', $option)) {
+                        continue;
+                    }
+
+                    if ('-' . $option['short'] !== $arg) {
+                        continue;
+                    }
+
+                    if ($option['value'] === self::NO_VALUE) {
+                        $index += 1;
+                        break;
+                    } else {
+                        $index += 2;
+                        break;
+                    }
+                }
+            } else {
+                $this->config['arguments'][] = $arg;
             }
         }
 
