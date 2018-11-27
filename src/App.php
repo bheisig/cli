@@ -317,7 +317,11 @@ class App {
                 ->configureLogger()
                 ->satisfyUserChoice();
         } catch (\Exception $e) {
-            $this->log->fatal($e->getMessage());
+            $messageParts = explode(PHP_EOL, $e->getMessage());
+
+            foreach ($messageParts as $messagePart) {
+                $this->log->printAsMessage()->fatal(trim($messagePart));
+            }
 
             if ($e->getCode() === 400) {
                 $this->executeCommand('help');
