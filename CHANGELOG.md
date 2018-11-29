@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 -   Make arguments available in configuration settings
 -   `IO::in()`: Print message/question to STDERR instead of STDOUT
 -   Respect environment variables to disable colored output
+-   Also, disable colors if there is no TTY available
 
 
 ### Fixed

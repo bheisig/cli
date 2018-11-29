@@ -742,6 +742,9 @@ class App {
      * - "<App name in upper case>_NOCOLOR"
      * regardless of their values
      *
+     * Also, disable colors if there is no TTY available
+     * (for example, then output is piped to another app)
+     *
      * @return self Returns itself
      */
     protected function configureLogger() {
@@ -749,7 +752,8 @@ class App {
 
         if (array_key_exists('no-colors', $this->config['options']) ||
             getenv('NO_COLOR') !== false ||
-            getenv($appNoColor) !== false) {
+            getenv($appNoColor) !== false ||
+            posix_isatty(STDOUT) === false) {
             $this->config['log']['colorize'] = false;
         }
 
