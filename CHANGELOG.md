@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 -   Log: Control text formatting with tags: `<strong>`, `<u>`, `<dim>`, `<fatal>`, `<error>`, `<warning>`, `<notice>`, `<debug>`, `<red>`, `<yellow>`, `<green>`, `<grey>`
 -   Make arguments available in configuration settings
 -   `IO::in()`: Print message/question to STDERR instead of STDOUT
+-   Respect environment variables to disable colored output
 
 
 ### Fixed

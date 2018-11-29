@@ -737,10 +737,19 @@ class App {
     /**
      * Set color handling and verbosity for used logger
      *
+     * Respect environment variables
+     * - "NO_COLOR" (@see https://no-color.org/) and
+     * - "<App name in upper case>_NOCOLOR"
+     * regardless of their values
+     *
      * @return self Returns itself
      */
     protected function configureLogger() {
-        if (array_key_exists('no-colors', $this->config['options'])) {
+        $appNoColor = strtoupper($this->config['composer']['extra']['name']) . '_NOCOLOR';
+
+        if (array_key_exists('no-colors', $this->config['options']) ||
+            getenv('NO_COLOR') !== false ||
+            getenv($appNoColor) !== false) {
             $this->config['log']['colorize'] = false;
         }
 
