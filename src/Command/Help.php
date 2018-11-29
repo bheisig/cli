@@ -79,57 +79,66 @@ class Help extends Command {
      * @return self Returns itself
      */
     public function printUsage() {
-        $commandList = '';
+        $commandList = [];
 
         foreach ($this->config['commands'] as $command => $commandOptions) {
-            if ($command === 'help' || $command === 'list') {
-                continue;
-            }
+            $separator = 20 - strlen($command);
 
-            $separator = 24 - strlen($command);
-
-            $commandList .= PHP_EOL . '    ' . $command . str_pad(' ', $separator) . $commandOptions['description'];
+            $commandList[] = '    ' . $command . str_pad(' ', $separator) .
+                '<dim>' . $commandOptions['description'] . '</dim>';
         }
 
+        sort($commandList);
+
         $this->log->info(
-            '%3$s
-        
-Usage: %1$s [COMMAND] [OPTIONS]
+            <<< EOF
+%1\$s: %3\$s
 
-Commands:
-%2$s
+<strong>VERSION</strong>
+    %4\$s
 
-For more information about a specific command use
+<strong>USAGE</strong>
+    \$ %1\$s [COMMAND] [OPTIONS]
 
-    %1$s help COMMAND
+<strong>COMMANDS</strong>
+%2\$s
 
-or
+    <dim># Print usage of a command:</dim>
+    \$ %1\$s help COMMAND
+    <dim># or:</dim>
+    \$ %1\$s COMMAND --help
+    <dim># List all commands:</dim>
+    \$ %1\$s list
 
-    %1$s COMMAND --help
+<strong>COMMON OPTIONS</strong>
+    -c <u>FILE</u>,            <dim>Include settings stored in a JSON-formatted</dim>
+    --config=<u>FILE</u>       <dim>configuration file FILE; repeat option for more</dim>
+                        <dim>than one FILE</dim>
+    -s <u>KEY=VALUE</u>,       <dim>Add runtime setting KEY with its VALUE; separate</dim>
+    --setting=<u>KEY=VALUE</u> <dim>nested keys with ".", for example "key1.key2=123";</dim>
+                        <dim>repeat option for more than one KEY</dim>
 
-List all commands with
+    --no-colors         <dim>Do not print colored messages</dim>
+    -q, --quiet         <dim>Do not output messages, only errors</dim>
+    -v, --verbose       <dim>Be more verbose</dim>
 
-    %1$s list
+    -h, --help          <dim>Print this help or information about a</dim>
+                        <dim>specific command</dim>
+    --version           <dim>Print version information</dim>
 
-Common options:
-
-    -c FILE,                Include settings stored in a JSON-formatted
-    --config FILE           configuration file FILE; repeat option for more
-                            than one FILE
-    -s KEY=VALUE,           Add runtime setting KEY with its VALUE; separate
-    --setting KEY=VALUE     nested keys with ".", for example "key1.key2=123";
-                            repeat option for more than one KEY
-
-    --no-colors             Do not print colored messages
-    -q, --quiet             Do not output messages, only errors
-    -v, --verbose           Be more verbose
-
-    -h, --help              Print this help or information about a
-                            specific command
-    --version               Print version information',
-            $this->config['args'][0],
-            $commandList,
-            $this->config['composer']['description']
+<strong>FIRST STEPS</strong>
+    <dim># %5\$s:</dim>
+    %1\$s init
+    <dim># %6\$s:</dim>
+    %1\$s configtest
+EOF
+            ,
+            $this->config['composer']['extra']['name'],
+            implode(PHP_EOL, $commandList),
+            $this->config['composer']['description'],
+            $this->config['composer']['extra']['version'],
+            $this->config['commands']['init']['description'],
+            $this->config['commands']['configtest']['description']
         );
 
         return $this;
