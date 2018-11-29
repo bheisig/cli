@@ -57,7 +57,7 @@ class IO {
             $message .= ' ';
         }
 
-        fwrite(STDOUT, $message);
+        fwrite(STDERR, $message);
 
         return trim(fgets(STDIN));
     }
