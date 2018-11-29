@@ -123,7 +123,7 @@ class Log {
         self::ERROR => '0;31',
         self::WARNING => '1;33',
         self::NOTICE => '1;33',
-        self::DEBUG => '0;37'
+        self::DEBUG => '2'
     ];
 
     /**
