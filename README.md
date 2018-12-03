@@ -38,8 +38,8 @@ For a simple application look at the `example/` folder.
 
 ##  Requirements
 
-*   PHP, version 5.6 or higher (7.1 is recommended)
-*   PHP modules `cli`, `date`, `filter` and `json`
+*   PHP, version 5.6 or higher (7.2 is recommended)
+*   PHP modules `calendar`, `cli`, `date`, `filter` and `json`
 
 
 ##  Installation

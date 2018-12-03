@@ -753,7 +753,7 @@ class App {
         if (array_key_exists('no-colors', $this->config['options']) ||
             getenv('NO_COLOR') !== false ||
             getenv($appNoColor) !== false ||
-            posix_isatty(STDOUT) === false) {
+            (function_exists('posix_isatty') && posix_isatty(STDOUT) === false)) {
             $this->config['log']['colorize'] = false;
         }
 
