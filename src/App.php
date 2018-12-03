@@ -323,10 +323,6 @@ class App {
                 $this->log->printAsMessage()->fatal(trim($messagePart));
             }
 
-            if ($e->getCode() === 400) {
-                $this->executeCommand('help');
-            }
-
             $this->close(1);
         }
     }
@@ -348,10 +344,6 @@ class App {
             $this->close();
         }
 
-        if (count($this->config['args']) < 2) {
-            throw new \Exception('Too few arguments', 400);
-        }
-
         foreach ($this->config['args'] as $arg) {
             if (array_key_exists($arg, $this->config['commands'])) {
                 $this->executeCommand($arg);
@@ -359,17 +351,18 @@ class App {
             }
         }
 
-        if (array_key_exists('h', $this->config['options']) ||
-            array_key_exists('help', $this->config['options'])) {
-            $this->executeCommand('help');
-            $this->close();
+        switch (count($this->config['arguments'])) {
+            case 0:
+                $this->executeCommand('help');
+                $this->close();
+                break;
+            default:
+                throw new \RuntimeException(sprintf(
+                    'Command "%s" not found',
+                    $this->config['arguments'][0]
+                ));
+                break;
         }
-
-        /**
-         * Ooops, went to far…
-         */
-
-        throw new \Exception('Bad request', 400);
     }
 
     /**

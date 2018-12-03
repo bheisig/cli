@@ -37,36 +37,32 @@ class Help extends Command {
      * @throws \Exception on error
      */
     public function execute() {
-        if (count($this->config['args']) > 2 &&
-            array_key_exists($this->config['args'][2], $this->config['commands'])) {
-            $command = $this->config['args'][2];
-        }
+        if (count($this->config['arguments']) === 1) {
+            if (array_key_exists($this->config['arguments'][0], $this->config['commands'])) {
+                // APP help COMMAND:
+                $class = $this->config['commands'][$this->config['arguments'][0]]['class'];
 
-        if (!array_key_exists('command', $this->config)) {
-            // app help:
-            $this->printUsage();
-        } elseif ($this->config['command'] === 'help' &&
-            count($this->config['args']) === 2) {
-            // app help:
-            $this->printUsage();
-        } elseif ($this->config['command'] === 'help' &&
-            isset($command)) {
-            // app help COMMAND:
-            $class = $this->config['commands'][$command]['class'];
+                if (!class_exists($class) ||
+                    !is_subclass_of($class, __NAMESPACE__ . '\\Executes')
+                ) {
+                    throw new \RuntimeException(sprintf(
+                        'Command "%s" not found',
+                        $this->config['arguments'][0]
+                    ));
+                }
 
-            /** @var Executes $instance */
-            $instance = new $class($this->config, $this->log);
-
-            $instance->printUsage();
-        } elseif (!isset($command) &&
-            count($this->config['args']) > 2 &&
-            strpos($this->config['args'][2], '-') === 0) {
-            // app help --option:
-            $this->printUsage();
+                /** @var Executes $command */
+                $command = new $class($this->config, $this->log);
+                $command->printUsage();
+            } else {
+                // APP help unknown:
+                throw new \RuntimeException(sprintf(
+                    'Command "%s" not found',
+                    $this->config['arguments'][0]
+                ));
+            }
         } else {
-            // app help NONSENSE:
-            $this->log->error('Unknown command');
-
+            // APP help:
             $this->printUsage();
         }
 
