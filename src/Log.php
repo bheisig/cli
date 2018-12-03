@@ -186,21 +186,21 @@ class Log {
      *
      * @param int $level Event level. One of the following class constants: DEBUG, INFO, WARNING, ERROR or FATAL.
      * @param string $value What to be formatted
-     * @param mixed $args (Optional) One or more arguments
+     * @param mixed ...$args (Optional) One or more arguments
      *
      * @return self Returns itself
      *
      * @see sprintf()
      */
-    protected function event($level, $value, $args = null) {
+    protected function event($level, $value, ...$args) {
         if ($level & $this->verbosity) {
-            $argList = func_get_args();
-
             $message = $value;
 
-            if (count($argList) >= 3) {
-                array_shift($argList);
-                $message = call_user_func_array('sprintf', $argList);
+            if (count($args) > 0) {
+                $message = call_user_func_array(
+                    'sprintf',
+                    array_merge([$value], $args)
+                );
             }
 
             if ($this->colorize) {
@@ -242,90 +242,102 @@ class Log {
      * Logs fatal event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
-     * @param mixed $args (Optional) One or more arguments
+     * @param mixed ...$args (Optional) One or more arguments
      *
      * @return self Returns itself
      *
      * @see sprintf()
      */
-    public function fatal($value, $args = null) {
-        $argList = array_merge([self::FATAL], func_get_args());
-        return call_user_func_array([__CLASS__, 'event'], $argList);
+    public function fatal($value, ...$args) {
+        return call_user_func_array(
+            [__CLASS__, 'event'],
+            array_merge([self::FATAL, $value], $args)
+        );
     }
 
     /**
      * Logs error event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
-     * @param mixed $args (Optional) One or more arguments
+     * @param mixed ...$args (Optional) One or more arguments
      *
      * @return self Returns itself
      *
      * @see sprintf()
      */
-    public function error($value, $args = null) {
-        $argList = array_merge([self::ERROR], func_get_args());
-        return call_user_func_array([__CLASS__, 'event'], $argList);
+    public function error($value, ...$args) {
+        return call_user_func_array(
+            [__CLASS__, 'event'],
+            array_merge([self::ERROR, $value], $args)
+        );
     }
 
     /**
      * Logs warning event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
-     * @param mixed $args (Optional) One or more arguments
+     * @param mixed ...$args (Optional) One or more arguments
      *
      * @return self Returns itself
      *
      * @see sprintf()
      */
-    public function warning($value, $args = null) {
-        $argList = array_merge([self::WARNING], func_get_args());
-        return call_user_func_array([__CLASS__, 'event'], $argList);
+    public function warning($value, ...$args) {
+        return call_user_func_array(
+            [__CLASS__, 'event'],
+            array_merge([self::WARNING, $value], $args)
+        );
     }
 
     /**
      * Logs warning event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
-     * @param mixed $args (Optional) One or more arguments
+     * @param mixed ...$args (Optional) One or more arguments
      *
      * @return self Returns itself
      *
      * @see sprintf()
      */
-    public function notice($value, $args = null) {
-        $argList = array_merge([self::NOTICE], func_get_args());
-        return call_user_func_array([__CLASS__, 'event'], $argList);
+    public function notice($value, ...$args) {
+        return call_user_func_array(
+            [__CLASS__, 'event'],
+            array_merge([self::NOTICE, $value], $args)
+        );
     }
 
     /**
      * Logs info event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
-     * @param mixed $args (Optional) One or more arguments
+     * @param mixed ...$args (Optional) One or more arguments
      *
      * @return self Returns itself
      *
      * @see sprintf()
      */
-    public function info($value, $args = null) {
-        $argList = array_merge([self::INFO], func_get_args());
-        return call_user_func_array([__CLASS__, 'event'], $argList);
+    public function info($value, ...$args) {
+        return call_user_func_array(
+            [__CLASS__, 'event'],
+            array_merge([self::INFO, $value], $args)
+        );
     }
 
     /**
      * Logs debug event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
-     * @param mixed $args (Optional) One or more arguments
+     * @param mixed ...$args (Optional) One or more arguments
      *
      * @return self Returns itself
      *
      * @see sprintf()
      */
-    public function debug($value, $args = null) {
-        $argList = array_merge([self::DEBUG], func_get_args());
-        return call_user_func_array([__CLASS__, 'event'], $argList);
+    public function debug($value, ...$args) {
+        return call_user_func_array(
+            [__CLASS__, 'event'],
+            array_merge([self::DEBUG, $value], $args)
+        );
     }
 
     /**
