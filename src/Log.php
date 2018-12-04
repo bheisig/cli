@@ -225,14 +225,7 @@ class Log {
 
             $message = $this->formatText($message);
 
-            switch ($this->output) {
-                case 'STDOUT':
-                    IO::out($message);
-                    break;
-                case 'STDERR':
-                    IO::err($message);
-                    break;
-            }
+            $this->flush($message);
         }
 
         return $this;
@@ -346,7 +339,8 @@ class Log {
      * @return self Returns itself
      */
     public function printEmptyLine() {
-        IO::out('');
+        $this->flush('');
+
         return $this;
     }
 
@@ -390,6 +384,22 @@ class Log {
         }
 
         return $result;
+    }
+
+    /**
+     * Print message to STDOUT or STDERR
+     *
+     * @param string $message Message
+     */
+    protected function flush($message) {
+        switch ($this->output) {
+            case 'STDOUT':
+                IO::out($message);
+                break;
+            case 'STDERR':
+                IO::err($message);
+                break;
+        }
     }
 
 }
