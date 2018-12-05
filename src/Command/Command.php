@@ -162,10 +162,30 @@ abstract class Command implements Executes {
      */
     public function printUsage() {
         $this->log->info(
-            'Usage: %1$s %2$s [OPTIONS]
+            <<< EOF
+%3\$s
 
-%3$s',
-            $this->config['args'][0],
+<strong>USAGE</strong>
+    \$ %1\$s %2\$s [OPTIONS]
+
+<strong>COMMON OPTIONS</strong>
+    -c <u>FILE</u>,            <dim>Include settings stored in a JSON-formatted</dim>
+    --config=<u>FILE</u>       <dim>configuration file FILE; repeat option for more</dim>
+                        <dim>than one FILE</dim>
+    -s <u>KEY=VALUE</u>,       <dim>Add runtime setting KEY with its VALUE; separate</dim>
+    --setting=<u>KEY=VALUE</u> <dim>nested keys with ".", for example "key1.key2=123";</dim>
+                        <dim>repeat option for more than one KEY</dim>
+
+    --no-colors         <dim>Do not print colored messages</dim>
+    -q, --quiet         <dim>Do not output messages, only errors</dim>
+    -v, --verbose       <dim>Be more verbose</dim>
+
+    -h, --help          <dim>Print this help or information about a</dim>
+                        <dim>specific command</dim>
+    --version           <dim>Print version information</dim>
+EOF
+            ,
+            $this->config['composer']['extra']['name'],
             $this->getName(),
             $this->getDescription()
         );

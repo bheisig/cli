@@ -40,7 +40,11 @@ class Init extends Command {
      * @throws \Exception on error
      */
     public function execute() {
-        $this->log->info($this->getDescription());
+        $this->log
+            ->printAsMessage()
+            ->info($this->getDescription())
+            ->printEmptyLine()
+            ->printAsOutput();
 
         $appName = $this->config['composer']['extra']['name'];
 
@@ -580,24 +584,6 @@ Validate your configuration settings with:
                 $destFile
             ));
         }
-
-        return $this;
-    }
-
-    /**
-     * Print usage of command
-     *
-     * @return self Returns itself
-     */
-    public function printUsage() {
-        $this->log->info(
-            'Usage: %1$s %2$s
-
-%3$s',
-            $this->config['args'][0],
-            $this->getName(),
-            $this->getDescription()
-        );
 
         return $this;
     }
