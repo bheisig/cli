@@ -54,11 +54,11 @@ class ListCommands extends Command {
         }
 
         $tab = 4;
-        $minLength = $tab * (int) ($maxCommandLength / $tab) + 2 * $tab;
+        $minLength = $tab * (int) ($maxCommandLength / $tab) + $tab;
 
         foreach ($this->config['commands'] as $command => $details) {
             $this->log->info(
-                str_pad($command, $minLength) . $details['description']
+                str_pad($command, $minLength) . '<dim>' . $details['description'] . '</dim>'
             );
         }
 
