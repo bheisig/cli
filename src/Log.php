@@ -79,6 +79,20 @@ class Log {
     const ALL = 63;
 
     /**
+     * Print as output
+     *
+     * @var string
+     */
+    const PRINT_AS_OUTPUT = 'STDOUT';
+
+    /**
+     * Print as message
+     *
+     * @var string
+     */
+    const PRINT_AS_MESSAGE = 'STDERR';
+
+    /**
      * Log Levels
      *
      * @var array
@@ -111,7 +125,7 @@ class Log {
      *
      * @var string Default to standard output
      */
-    protected $output = 'STDOUT';
+    protected $output = self::PRINT_AS_OUTPUT;
 
     /**
      * ANSI color codes
@@ -167,7 +181,7 @@ class Log {
      * @return self Returns itself
      */
     public function printAsOutput() {
-        $this->output = 'STDOUT';
+        $this->output = self::PRINT_AS_OUTPUT;
         return $this;
     }
 
@@ -177,14 +191,15 @@ class Log {
      * @return self Returns itself
      */
     public function printAsMessage() {
-        $this->output = 'STDERR';
+        $this->output = self::PRINT_AS_MESSAGE;
         return $this;
     }
 
     /**
-     * Logs event. It provides the same functionality as sprintf() by passing two or more arguments.
+     * Log event. It provides the same functionality as sprintf() by passing three or more arguments.
      *
-     * @param int $level Event level. One of the following class constants: DEBUG, INFO, WARNING, ERROR or FATAL.
+     * @param int $level Event level. One of the following class constants:
+     * DEBUG, INFO, NOTICE, WARNING, ERROR or FATAL.
      * @param string $value What to be formatted
      * @param mixed ...$args (Optional) One or more arguments
      *
@@ -192,7 +207,7 @@ class Log {
      *
      * @see sprintf()
      */
-    protected function event($level, $value, ...$args) {
+    public function event($level, $value, ...$args) {
         if ($level & $this->verbosity) {
             $message = $value;
 
@@ -232,7 +247,7 @@ class Log {
     }
 
     /**
-     * Logs fatal event. It provides the same functionality as sprintf() by passing two or more arguments.
+     * Log fatal event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
      * @param mixed ...$args (Optional) One or more arguments
@@ -249,7 +264,7 @@ class Log {
     }
 
     /**
-     * Logs error event. It provides the same functionality as sprintf() by passing two or more arguments.
+     * Log error event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
      * @param mixed ...$args (Optional) One or more arguments
@@ -266,7 +281,7 @@ class Log {
     }
 
     /**
-     * Logs warning event. It provides the same functionality as sprintf() by passing two or more arguments.
+     * Log warning event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
      * @param mixed ...$args (Optional) One or more arguments
@@ -283,7 +298,7 @@ class Log {
     }
 
     /**
-     * Logs warning event. It provides the same functionality as sprintf() by passing two or more arguments.
+     * Log warning event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
      * @param mixed ...$args (Optional) One or more arguments
@@ -300,7 +315,7 @@ class Log {
     }
 
     /**
-     * Logs info event. It provides the same functionality as sprintf() by passing two or more arguments.
+     * Log info event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
      * @param mixed ...$args (Optional) One or more arguments
@@ -317,7 +332,7 @@ class Log {
     }
 
     /**
-     * Logs debug event. It provides the same functionality as sprintf() by passing two or more arguments.
+     * Log debug event. It provides the same functionality as sprintf() by passing two or more arguments.
      *
      * @param string $value What to be formatted
      * @param mixed ...$args (Optional) One or more arguments
@@ -393,10 +408,10 @@ class Log {
      */
     protected function flush($message) {
         switch ($this->output) {
-            case 'STDOUT':
+            case self::PRINT_AS_OUTPUT:
                 IO::out($message);
                 break;
-            case 'STDERR':
+            case self::PRINT_AS_MESSAGE:
                 IO::err($message);
                 break;
         }
