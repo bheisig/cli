@@ -318,27 +318,48 @@ class App implements ExitApp {
                 ->configureLogger()
                 ->satisfyUserChoice();
         } catch (\Exception $exception) {
-            $messageParts = explode(PHP_EOL, $exception->getMessage());
+            $this->abort($exception);
+        }
+    }
 
-            foreach ($messageParts as $messagePart) {
-                $this->log->printAsMessage()->fatal(trim($messagePart));
+    /**
+     * Print exception message, stack trace (only in debug mode) and exit application with standardized exit code
+     *
+     * @param \Throwable $exception Exception
+     */
+    protected function abort(\Throwable $exception) {
+        $messageParts = explode(PHP_EOL, $exception->getMessage());
+
+        foreach ($messageParts as $messagePart) {
+            $this->log->printAsMessage()->fatal(trim($messagePart));
+        }
+
+        if ($this->config['log']['verbosity'] & Log::DEBUG) {
+            $stackTrace = explode("\n", $exception->getTraceAsString());
+
+            if (count($stackTrace) > 0) {
+                $this->log->debug('Stack trace:');
             }
 
-            switch ($exception->getCode()) {
-                case ExitApp::NOTHING_TO_DO:
-                    $this->close(ExitApp::NOTHING_TO_DO);
-                    break;
-                case ExitApp::RUNTIME_ERROR:
-                    $this->close(ExitApp::RUNTIME_ERROR);
-                    break;
-                case ExitApp::BAD_USER_INTERACTION:
-                    $this->close(ExitApp::BAD_USER_INTERACTION);
-                    break;
-                case ExitApp::COMMON_ERROR:
-                default:
-                    $this->close(ExitApp::COMMON_ERROR);
-                    break;
+            foreach ($stackTrace as $line) {
+                $this->log->debug($line);
             }
+        }
+
+        switch ($exception->getCode()) {
+            case ExitApp::NOTHING_TO_DO:
+                $this->close(ExitApp::NOTHING_TO_DO);
+                break;
+            case ExitApp::RUNTIME_ERROR:
+                $this->close(ExitApp::RUNTIME_ERROR);
+                break;
+            case ExitApp::BAD_USER_INTERACTION:
+                $this->close(ExitApp::BAD_USER_INTERACTION);
+                break;
+            case ExitApp::COMMON_ERROR:
+            default:
+                $this->close(ExitApp::COMMON_ERROR);
+                break;
         }
     }
 

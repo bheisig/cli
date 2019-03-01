@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 -   Provide standardized exit codes to close application
+-   Print stack trace in debug mode after something went wrong
 
 
 ### Fixed
