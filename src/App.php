@@ -554,8 +554,14 @@ class App {
      * Try to load optional configuration files (app defaults, system-wide, user-specific)
      *
      * Default settings <APP DIR>/config/default.json are overwritten by…
-     * System-wide settings /etc/<APP NAME>/config.json are overwritten by…
-     * User settings ~/.<APP NAME>/config.json
+     *
+     * On Linux/BDS/MacOS:
+     * …system-wide settings /etc/<APP NAME>/config.json are overwritten by…
+     * …user settings ~/.<APP NAME>/config.json
+     *
+     * On Windows:
+     * …system-wide settings C:\tools\<APP NAME>\config.json are overwritten by…
+     * …user settings <LOCALAPPDATA>\<APP NAME>\config.json
      *
      * These files needn't to exist.
      *
@@ -566,23 +572,34 @@ class App {
     protected function loadOptionalConfigFiles() {
         $appName = $this->config['composer']['extra']['name'];
 
-        if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
-            $systemSettings = sprintf('C:\\tools\\%s\\config.json', $appName);
-            $userSettings = sprintf('%s\\%s\\config.json', $_SERVER['LOCALAPPDATA'], $appName);
-        } else {
-            $systemSettings = sprintf('/etc/%s/config.json', $appName);
-            $userSettings = sprintf('%s/.%s/config.json', $_SERVER['HOME'], $appName);
-        }
+        // Load default settings…
+        $this->addConfigFile($this->config['appDir'] . '/config/default.json', true);
 
-        $this
-            // Default settings…
-            ->addConfigFile($this->config['appDir'] . '/config/default.json', true)
-            // …overwritten by system-wide settings…
-            ->addConfigFile($systemSettings, true);
+        switch (strtolower(substr(PHP_OS, 0, 3))) {
+            case 'win':
+                // …overwritten by system-wide settings…
+                $this->addConfigFile(sprintf('C:\\tools\\%s\\config.json', $appName), true);
 
-        // …overwritten by user settings:
-        if (strtolower(substr(PHP_OS, 0, 3)) === 'win' || $_SERVER['USER'] !== 'root') {
-            $this->addConfigFile($userSettings, true);
+                // …overwritten by user settings:
+                if (array_key_exists('LOCALAPPDATA', $_SERVER) &&
+                    is_string($_SERVER['LOCALAPPDATA']) &&
+                    strlen($_SERVER['LOCALAPPDATA']) > 0) {
+                    $this->addConfigFile(sprintf('%s\\%s\\config.json', $_SERVER['LOCALAPPDATA'], $appName), true);
+                }
+                break;
+            default:
+                // …overwritten by system-wide settings…
+                $this->addConfigFile(sprintf('/etc/%s/config.json', $appName), true);
+
+                // …overwritten by user settings:
+                if (array_key_exists('USER', $_SERVER) &&
+                    $_SERVER['USER'] !== 'root' &&
+                    array_key_exists('HOME', $_SERVER) &&
+                    is_string($_SERVER['HOME']) &&
+                    strlen($_SERVER['HOME']) > 0) {
+                    $this->addConfigFile(sprintf('%s/.%s/config.json', $_SERVER['HOME'], $appName), true);
+                }
+                break;
         }
 
         return $this;
