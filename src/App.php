@@ -284,7 +284,7 @@ class App {
         }
 
         if (isset($long)) {
-            if (!is_string($long) || strlen($long) < 2) {
+            if (!is_string($long) || strlen($long) <= 1) {
                 throw new \Exception(sprintf(
                     'Bad long option "%s"',
                     $long
@@ -333,17 +333,20 @@ class App {
      * @throws \Exception on error
      */
     protected function satisfyUserChoice() {
+        // <APP NAME> --version:
         if (array_key_exists('version', $this->config['options'])) {
             $this->executeCommand('version');
             $this->close();
         }
 
+        // <APP NAME> -v:
         if (count($this->config['args']) === 2 &&
             array_key_exists('v', $this->config['options'])) {
             $this->executeCommand('version');
             $this->close();
         }
 
+        // <APP NAME> <COMMAND>:
         foreach ($this->config['args'] as $arg) {
             if (array_key_exists($arg, $this->config['commands'])) {
                 $this->executeCommand($arg);
@@ -352,10 +355,13 @@ class App {
         }
 
         switch (count($this->config['arguments'])) {
+            // <APP NAME> [<COMMAND>] [<OPTION>] --help:
+            // <APP NAME> [<COMMAND>] [<OPTION>] -h:
             case 0:
                 $this->executeCommand('help');
                 $this->close();
                 break;
+            // <APP NAME> <UNKNOWN COMMAND>:
             default:
                 throw new \RuntimeException(sprintf(
                     'Command "%s" not found',

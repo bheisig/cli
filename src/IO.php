@@ -24,34 +24,60 @@
 
 namespace bheisig\cli;
 
+/**
+ * Input/output
+ */
 class IO {
 
-    public static function out($message, $args = null) {
-        $argList = func_get_args();
-
-        if (count($argList) >= 2) {
-            $message = call_user_func_array('sprintf', $argList);
+    /**
+     * Write line to STDOUT
+     *
+     * @param string $line Line
+     * @param mixed ...$args (Optional) One or more arguments
+     */
+    public static function out($line, ...$args) {
+        if (count($args) > 0) {
+            $line = call_user_func_array(
+                'sprintf',
+                array_merge([$line], $args)
+            );
         }
 
-        fwrite(STDOUT, $message . PHP_EOL);
+        fwrite(STDOUT, $line . PHP_EOL);
     }
 
-    public static function err($message, $args = null) {
-        $argList = func_get_args();
-
-        if (count($argList) >= 2) {
-            $message = call_user_func_array('sprintf', $argList);
+    /**
+     * Write message to STDERR
+     *
+     * @param string $message Message
+     * @param mixed ...$args (Optional) One or more arguments
+     */
+    public static function err($message, ...$args) {
+        if (count($args) > 0) {
+            $message = call_user_func_array(
+                'sprintf',
+                array_merge([$message], $args)
+            );
         }
 
         fwrite(STDERR, $message . PHP_EOL);
     }
 
-    public static function in($message, $args = null) {
+    /**
+     * Read from STDIN
+     *
+     * @param string $message Message
+     * @param mixed ...$args (Optional) One or more arguments
+     *
+     * @return string User input
+     */
+    public static function in($message, ...$args) {
         if ($message !== '') {
-            $argList = func_get_args();
-
-            if (count($argList) >= 2) {
-                $message = call_user_func_array('sprintf', $argList);
+            if (count($args) > 0) {
+                $message = call_user_func_array(
+                    'sprintf',
+                    array_merge([$message], $args)
+                );
             }
 
             $message .= ' ';

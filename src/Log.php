@@ -97,7 +97,7 @@ class Log {
      *
      * @var array
      */
-    static protected $levels = [
+    protected static $levels = [
         self::FATAL => 'fatal',
         self::ERROR => 'error',
         self::WARNING => 'warning',
