@@ -24,6 +24,8 @@
 
 namespace bheisig\cli\Command;
 
+use bheisig\cli\ExitApp;
+
 /**
  * Command "help"
  */
@@ -48,7 +50,7 @@ class Help extends Command {
                     throw new \RuntimeException(sprintf(
                         'Command "%s" not found',
                         $this->config['arguments'][0]
-                    ));
+                    ), ExitApp::BAD_USER_INTERACTION);
                 }
 
                 /** @var Executes $command */
@@ -59,7 +61,7 @@ class Help extends Command {
                 throw new \RuntimeException(sprintf(
                     'Command "%s" not found',
                     $this->config['arguments'][0]
-                ));
+                ), ExitApp::BAD_USER_INTERACTION);
             }
         } else {
             // APP help:

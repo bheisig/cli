@@ -395,7 +395,7 @@ class Log {
         );
 
         if (!is_string($result)) {
-            throw new \RuntimeException('Unable to format text');
+            throw new \RuntimeException('Unable to format text', ExitApp::RUNTIME_ERROR);
         }
 
         return $result;

@@ -149,7 +149,7 @@ class Config extends \ArrayIterator {
                                     throw new \Exception(sprintf(
                                         'Unknown value "%s" for "items"',
                                         $rule['items']
-                                    ));
+                                    ), ExitApp::RUNTIME_ERROR);
                             }
                         }
                     }
@@ -262,7 +262,7 @@ class Config extends \ArrayIterator {
                     throw new \Exception(sprintf(
                         'Unknown type "%s" in schema',
                         $rule['type']
-                    ));
+                    ), ExitApp::RUNTIME_ERROR);
             }
         }
 

@@ -29,7 +29,7 @@ use bheisig\cli\Command\Executes;
 /**
  * CLI application
  */
-class App {
+class App implements ExitApp {
 
     /**
      * Options: Option has no value.
@@ -96,7 +96,7 @@ class App {
             throw new \Exception(sprintf(
                 'This application must be invoked by the CLI interpreter of PHP, not the %s SAPI',
                 PHP_SAPI
-            ));
+            ), ExitApp::BAD_USER_INTERACTION);
         }
 
         return $this;
@@ -196,7 +196,7 @@ class App {
                 'Unable to parse configuration file "%s" because content is of type "%s"',
                 $file,
                 gettype($settings)
-            ));
+            ), ExitApp::RUNTIME_ERROR);
         }
 
         return $this;
@@ -264,7 +264,8 @@ class App {
                 break;
             default:
                 throw new \Exception(
-                    'Invalid value'
+                    'Invalid value',
+                    ExitApp::BAD_USER_INTERACTION
                 );
         }
 
@@ -277,7 +278,7 @@ class App {
                 throw new \Exception(sprintf(
                     'Bad short option "%s"',
                     $short
-                ));
+                ), ExitApp::BAD_USER_INTERACTION);
             }
 
             $option['short'] = $short;
@@ -288,7 +289,7 @@ class App {
                 throw new \Exception(sprintf(
                     'Bad long option "%s"',
                     $long
-                ));
+                ), ExitApp::BAD_USER_INTERACTION);
             }
 
             $option['long'] = $long;
@@ -316,14 +317,28 @@ class App {
                 ->addRuntimeSettings()
                 ->configureLogger()
                 ->satisfyUserChoice();
-        } catch (\Exception $e) {
-            $messageParts = explode(PHP_EOL, $e->getMessage());
+        } catch (\Exception $exception) {
+            $messageParts = explode(PHP_EOL, $exception->getMessage());
 
             foreach ($messageParts as $messagePart) {
                 $this->log->printAsMessage()->fatal(trim($messagePart));
             }
 
-            $this->close(1);
+            switch ($exception->getCode()) {
+                case ExitApp::NOTHING_TO_DO:
+                    $this->close(ExitApp::NOTHING_TO_DO);
+                    break;
+                case ExitApp::RUNTIME_ERROR:
+                    $this->close(ExitApp::RUNTIME_ERROR);
+                    break;
+                case ExitApp::BAD_USER_INTERACTION:
+                    $this->close(ExitApp::BAD_USER_INTERACTION);
+                    break;
+                case ExitApp::COMMON_ERROR:
+                default:
+                    $this->close(ExitApp::COMMON_ERROR);
+                    break;
+            }
         }
     }
 
@@ -366,7 +381,7 @@ class App {
                 throw new \RuntimeException(sprintf(
                     'Command "%s" not found',
                     $this->config['arguments'][0]
-                ));
+                ), ExitApp::BAD_USER_INTERACTION);
                 break;
         }
     }
@@ -419,7 +434,7 @@ class App {
                                     throw new \Exception(sprintf(
                                         'Option "%s" needs a value',
                                         $key
-                                    ));
+                                    ), ExitApp::BAD_USER_INTERACTION);
                                 }
                                 break;
                         }
@@ -463,7 +478,7 @@ class App {
                     );
                 }
 
-                throw new \Exception($message);
+                throw new \Exception($message, ExitApp::BAD_USER_INTERACTION);
             }
         }
 
@@ -634,7 +649,7 @@ class App {
                                     'Unknown value "%s" for option "%s"',
                                     $item,
                                     $option
-                                ));
+                                ), ExitApp::BAD_USER_INTERACTION);
                             }
 
                             $additionalConfigFiles[] = $item;
@@ -645,7 +660,7 @@ class App {
                             'Unknown value "%s" for option "%s"',
                             $value,
                             $option
-                        ));
+                        ), ExitApp::BAD_USER_INTERACTION);
                 }
             }
         }
@@ -691,7 +706,7 @@ class App {
                             'Unknown value "%s" for option "%s"',
                             $value,
                             $option
-                        ));
+                        ), ExitApp::BAD_USER_INTERACTION);
                 }
             }
         }
@@ -702,7 +717,7 @@ class App {
 
             if ($key === false || $value === false ||
                 strlen($key) === 0 || strlen($value) <= 1) {
-                throw new \Exception('Invalid runtime settings');
+                throw new \Exception('Invalid runtime settings', ExitApp::BAD_USER_INTERACTION);
             }
 
             // Crop "=":
@@ -802,7 +817,7 @@ class App {
             throw new \Exception(sprintf(
                 'Composer file "%s" is missing or not readable',
                 $composerFile
-            ));
+            ), ExitApp::RUNTIME_ERROR);
         }
 
         $this->config['composer'] = JSONFile::read($composerFile);
@@ -812,7 +827,7 @@ class App {
             throw new \Exception(sprintf(
                 'Missing "extra" in composer file "%s"',
                 $composerFile
-            ));
+            ), ExitApp::RUNTIME_ERROR);
         }
 
         $keys = [
@@ -826,7 +841,7 @@ class App {
                     'Missing "extra.%s" in composer file "%s"',
                     $key,
                     $composerFile
-                ));
+                ), ExitApp::RUNTIME_ERROR);
             }
         }
 
@@ -849,7 +864,7 @@ class App {
             throw new \RuntimeException(sprintf(
                 'Command "%s" not found',
                 $command
-            ));
+            ), ExitApp::BAD_USER_INTERACTION);
         }
 
         $this->config['command'] = $command;
@@ -872,7 +887,7 @@ class App {
      *
      * @param int $exitCode Defaults to 0
      */
-    protected function close($exitCode = 0) {
+    public function close($exitCode = ExitApp::WELL_DONE) {
         exit($exitCode);
     }
 

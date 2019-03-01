@@ -24,6 +24,7 @@
 
 namespace bheisig\cli\Command;
 
+use bheisig\cli\ExitApp;
 use bheisig\cli\IO;
 use bheisig\cli\JSONFile;
 
@@ -557,7 +558,7 @@ Validate your configuration settings with:
                 throw new \Exception(sprintf(
                     'Unable to create directory %s',
                     $path
-                ));
+                ), ExitApp::RUNTIME_ERROR);
             }
         }
 
@@ -582,7 +583,7 @@ Validate your configuration settings with:
                 'Unable to copy file "%s" to "%s"',
                 $sourceFile,
                 $destFile
-            ));
+            ), ExitApp::RUNTIME_ERROR);
         }
 
         return $this;

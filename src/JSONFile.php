@@ -48,7 +48,7 @@ class JSONFile {
                 throw new \Exception(sprintf(
                     'Unable to read file "%s"',
                     $file
-                ), 400);
+                ), ExitApp::RUNTIME_ERROR);
             }
         }
 
@@ -64,7 +64,7 @@ class JSONFile {
         if ($result === false) {
             throw new \Exception(sprintf(
                 'File "%s" contains invalid JSON data.',
-                500
+                ExitApp::RUNTIME_ERROR
             ));
         }
 
@@ -83,7 +83,7 @@ class JSONFile {
         $jsonString = json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
         if ($jsonString === false) {
-            throw new \Exception('Unable to convert array to JSON string');
+            throw new \Exception('Unable to convert array to JSON string', ExitApp::RUNTIME_ERROR);
         }
 
         $status = file_put_contents(
@@ -95,7 +95,7 @@ class JSONFile {
             throw new \Exception(sprintf(
                 'Unable to write JSON-formatted content to file %s',
                 $file
-            ));
+            ), ExitApp::RUNTIME_ERROR);
         }
     }
 

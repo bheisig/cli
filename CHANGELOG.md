@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ##  [Unreleased]
 
 
+### Added
+
+-   Provide standardized exit codes to close application
+
+
 ### Fixed
 
 -   Check environment variables for `HOME`, `USER` and `LOCALAPPDATA` first before trying to load configuration files
