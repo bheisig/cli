@@ -49,12 +49,28 @@ class Init extends Command {
 
         $appName = $this->config['composer']['extra']['name'];
 
-        if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
-            $configDir = sprintf('%s\\%s', $_SERVER['LOCALAPPDATA'], $appName);
-        } elseif ($_SERVER['USER'] === 'root') {
-            $configDir = sprintf('/etc/%s', $appName);
-        } else {
-            $configDir = sprintf('%s/.%s', $_SERVER['HOME'], $appName);
+        $configDir = '.';
+
+        switch (strtolower(substr(PHP_OS, 0, 3))) {
+            case 'win':
+                if (array_key_exists('LOCALAPPDATA', $_SERVER) &&
+                    is_string($_SERVER['LOCALAPPDATA']) &&
+                    strlen($_SERVER['LOCALAPPDATA']) > 0) {
+                    $configDir = sprintf('%s\\%s', $_SERVER['LOCALAPPDATA'], $appName);
+                }
+                break;
+            default:
+                if (array_key_exists('USER', $_SERVER) &&
+                    $_SERVER['USER'] !== 'root' &&
+                    array_key_exists('HOME', $_SERVER) &&
+                    is_string($_SERVER['HOME']) &&
+                    strlen($_SERVER['HOME']) > 0) {
+                    $configDir = sprintf('%s/.%s', $_SERVER['HOME'], $appName);
+                } elseif (array_key_exists('USER', $_SERVER) &&
+                    $_SERVER['USER'] === 'root') {
+                    $configDir = sprintf('/etc/%s', $appName);
+                }
+                break;
         }
 
         $configFile = $configDir . DIRECTORY_SEPARATOR . 'config.json';
