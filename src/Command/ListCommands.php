@@ -48,7 +48,7 @@ class ListCommands extends Command {
         $maxCommandLength = 0;
 
         foreach (array_keys($this->config['commands']) as $command) {
-            if (strlen($command) > $maxCommandLength) {
+            if (is_string($command) && strlen($command) > $maxCommandLength) {
                 $maxCommandLength = strlen($command);
             }
         }

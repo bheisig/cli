@@ -52,12 +52,17 @@ class JSONFile {
             }
         }
 
+        $fileContent = file_get_contents($file);
+
+        if ($fileContent === false) {
+            throw new \Exception(sprintf(
+                'Unable to read file "%s"',
+                $file
+            ), ExitApp::RUNTIME_ERROR);
+        }
+
         $result = json_decode(
-            trim(
-                file_get_contents(
-                    $file
-                )
-            ),
+            trim($fileContent),
             true
         );
 

@@ -70,6 +70,8 @@ class IO {
      * @param mixed ...$args (Optional) One or more arguments
      *
      * @return string User input
+     *
+     * @throws \Exception on error
      */
     public static function in($message, ...$args) {
         if ($message !== '') {
@@ -85,7 +87,13 @@ class IO {
 
         fwrite(STDERR, $message);
 
-        return trim(fgets(STDIN));
+        $input = fgets(STDIN);
+
+        if ($input === false) {
+            throw new \Exception('Unable to read from STDIN');
+        }
+
+        return trim($input);
     }
 
 }

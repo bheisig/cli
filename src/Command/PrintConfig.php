@@ -55,9 +55,15 @@ class PrintConfig extends Command {
             $config['composer']
         );
 
+        $prettyConfig = json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+        if ($prettyConfig === false) {
+            throw new \Exception('Unable to parse configuration settings');
+        }
+
         $this->log
             ->printAsOutput()
-            ->info(json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            ->info($prettyConfig);
 
         return $this;
     }

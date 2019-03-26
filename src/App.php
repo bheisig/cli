@@ -189,15 +189,7 @@ class App implements ExitApp {
     public function addConfigFile($file, $force = false) {
         $settings = JSONFile::read($file, $force);
 
-        if (is_array($settings)) {
-            $this->addConfigSettings($settings);
-        } else {
-            throw new \Exception(sprintf(
-                'Unable to parse configuration file "%s" because content is of type "%s"',
-                $file,
-                gettype($settings)
-            ), ExitApp::RUNTIME_ERROR);
-        }
+        $this->addConfigSettings($settings);
 
         return $this;
     }
@@ -745,9 +737,10 @@ class App implements ExitApp {
             $value = substr($value, 1);
 
             // Type casting:
-            if (is_numeric($value)) {
-                // Returns int or float:
-                $value = $value + 0;
+            if (is_numeric($value) && (int) $value == $value) {
+                $value = (int) $value;
+            } elseif (is_numeric($value) && (float) $value == $value) {
+                $value = (float) $value;
             } elseif (strtolower($value) === 'true') {
                 $value = true;
             } elseif (strtolower($value) === 'false') {

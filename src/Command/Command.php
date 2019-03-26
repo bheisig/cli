@@ -123,8 +123,8 @@ abstract class Command implements Executes {
         } elseif (time() >= mktime(0, 0, 0, 12, 31) &&
             time() <= mktime(23, 59, 59, 1, 1)) {
             $this->log->debug('Happy new year!');
-        } elseif (time() >= mktime(0, 0, 0, date('n', easter_date()), date('j', easter_date()) - 2) &&
-            time() <= mktime(23, 59, 59, date('n', easter_date()), date('j', easter_date()) + 1)) {
+        } elseif (time() >= mktime(0, 0, 0, (int) date('n', easter_date()), (int) date('j', easter_date()) - 2) &&
+            time() <= mktime(23, 59, 59, (int) date('n', easter_date()), (int) date('j', easter_date()) + 1)) {
             $this->log->debug('Happy easter!');
         } else {
             $this->log->debug('Have fun :)');
