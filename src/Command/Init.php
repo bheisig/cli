@@ -24,6 +24,8 @@
 
 namespace bheisig\cli\Command;
 
+use \Exception;
+use \DomainException;
 use bheisig\cli\ExitApp;
 use bheisig\cli\IO;
 use bheisig\cli\JSONFile;
@@ -38,7 +40,7 @@ class Init extends Command {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public function execute() {
         $this->log
@@ -136,6 +138,17 @@ Validate your configuration settings with:
         return $this;
     }
 
+    /**
+     * Walk through rules
+     *
+     * @param array $rules Rules
+     * @param array $defaults Default values
+     * @param string $prefix Optional prefix
+     *
+     * @return array
+     *
+     * @throws Exception on error
+     */
     protected function walk(array $rules, array $defaults, $prefix = '') {
         $config = [];
 
@@ -226,6 +239,13 @@ Validate your configuration settings with:
         return $config;
     }
 
+    /**
+     * Ask to skip optional part
+     *
+     * @return bool true means yes, skip it; false means no, configure it
+     *
+     * @throws Exception on error
+     */
     protected function askToSkip() {
         $question = 'This part is optional. Do you like to configure it? [y|N]:';
         $answer = strtolower(IO::in($question));
@@ -249,6 +269,19 @@ Validate your configuration settings with:
         }
     }
 
+    /**
+     * Ask user for a value which should be a string
+     *
+     * @param string $key Setting
+     * @param bool $required Is this setting required? Defaults to false (no, it isn't)
+     * @param string $default Optional default value which will be used if user doesn't provide a value
+     * @param array $values Optional possible values; no other values are accepted
+     * @param int $minLength Optional minimum length of value
+     *
+     * @return string|null Value or nothing
+     *
+     * @throws Exception on error
+     */
     protected function askForString($key, $required = false, $default = null, array $values = [], $minLength = 0) {
         $question = sprintf(
             'What is the value for configuration setting "%s"',
@@ -263,11 +296,6 @@ Validate your configuration settings with:
         }
 
         $question .= '?';
-
-        // Reset default:
-        if (strlen($default) === 0) {
-            $default = null;
-        }
 
         if (isset($default)) {
             $question .= sprintf(' [%s]:', $default);
@@ -299,6 +327,21 @@ Validate your configuration settings with:
         return null;
     }
 
+    /**
+     * Ask user for a value which should be an integer
+     *
+     * @param string $key Setting
+     * @param bool $required Is this setting required? Defaults to false (no, it isn't)
+     * @param int $default Optional default value which will be used if user doesn't provide a value
+     * @param int $gt Optional: Value must be greater than this
+     * @param int $ge Optional: Value must be greater or equal than this
+     * @param int $lt Optional: Value must be less than this
+     * @param int $le Optional: Value must be less or equal than this
+     *
+     * @return int|null Value or nothing
+     *
+     * @throws Exception on error
+     */
     protected function askForInteger(
         $key, $required = false, $default = null, $gt = null, $ge = null, $lt = null, $le = null
     ) {
@@ -342,6 +385,17 @@ Validate your configuration settings with:
         return null;
     }
 
+    /**
+     * Ask user for a value which should be a boolean
+     *
+     * @param string $key Setting
+     * @param bool $required Is this setting required? Defaults to false (no, it isn't)
+     * @param bool $default Optional default value which will be used if user doesn't provide a value
+     *
+     * @return bool|null Value or nothing
+     *
+     * @throws Exception on error
+     */
     protected function askForBoolean($key, $required = false, $default = null) {
         $question = sprintf(
             'Enable configuration setting "%s"?',
@@ -393,6 +447,21 @@ Validate your configuration settings with:
         return null;
     }
 
+    /**
+     * Ask user for a value which should be an array
+     *
+     * @param string $key Setting
+     * @param bool $required Is this setting required? Defaults to false (no, it isn't)
+     * @param array $default Optional default value which will be used if user doesn't provide a value
+     * @param array $values Optional possible values; no other values are accepted
+     * @param int $minCount Optional: minimum number of values in this array; defaults to 0 (disable check)
+     * @param string $items Optional: data type of values in this array; defaults to string
+     * @param int $minLength Optional: minimum length for each item, if they are strings
+     *
+     * @return array|null Value or nothing
+     *
+     * @throws Exception on error
+     */
     protected function askForArray(
         $key, $required = false, $default = null, array $values = [], $minCount = 0, $items = 'string', $minLength = 0
     ) {
@@ -452,9 +521,23 @@ Validate your configuration settings with:
                     case 'string':
                         if (!is_string($value)) {
                             $this->log->warning(
-                                'Values must be %ss. Here are your options: %s',
+                                'Item must be string',
+                                $items
+                            );
+                            return $this->askForArray(
+                                $key,
+                                $required,
+                                $default,
+                                $values,
+                                $minCount,
                                 $items,
-                                implode(', ', $values)
+                                $minLength
+                            );
+                        } elseif (is_string($value) && $minLength > 0 && strlen($value) < $minLength) {
+                            $this->log->warning(
+                                'Item "%s" must have at least %s character(s)',
+                                $value,
+                                $minLength
                             );
                             return $this->askForArray(
                                 $key,
@@ -467,6 +550,20 @@ Validate your configuration settings with:
                             );
                         }
                         break;
+                    case 'int':
+                    case 'integer':
+                        // @todo Implement me, but type casting first!
+                        break;
+                    case 'bool':
+                    case 'boolean':
+                        // @todo Implement me, but type casting first!
+                        break;
+                    default:
+                        throw new DomainException(sprintf(
+                            'Unknown data type "%s" for items in schema found for key "%s"',
+                            $items,
+                            $key
+                        ));
                 }
 
                 $result[] = $value;
@@ -478,6 +575,18 @@ Validate your configuration settings with:
         return null;
     }
 
+    /**
+     * Ask user for a value, but the data type doesn't matter
+     *
+     * @param string $key Setting
+     * @param bool $required Is this setting required? Defaults to false (no, it isn't)
+     * @param mixed $default Optional default value which will be used if user doesn't provide a value
+     * @param array $values Optional possible values; no other values are accepted
+     *
+     * @return bool|string|null Value or nothing
+     *
+     * @throws Exception on error
+     */
     protected function askForMixed($key, $required = false, $default = null, array $values = []) {
         $question = sprintf(
             'What is the value for configuration setting "%s"',
@@ -562,7 +671,7 @@ Validate your configuration settings with:
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     protected function createDir($path) {
         if (!is_dir($path)) {
@@ -571,7 +680,7 @@ Validate your configuration settings with:
             $status = mkdir($path, 0775, true);
 
             if ($status === false) {
-                throw new \Exception(sprintf(
+                throw new Exception(sprintf(
                     'Unable to create directory %s',
                     $path
                 ), ExitApp::RUNTIME_ERROR);
@@ -589,13 +698,13 @@ Validate your configuration settings with:
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     protected function copyFile($sourceFile, $destFile) {
         $status = copy($sourceFile, $destFile);
 
         if ($status === false) {
-            throw new \Exception(sprintf(
+            throw new Exception(sprintf(
                 'Unable to copy file "%s" to "%s"',
                 $sourceFile,
                 $destFile

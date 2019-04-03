@@ -2,6 +2,7 @@
 
 namespace hello\world\Command;
 
+use \Exception;
 use bheisig\cli\Command\Command;
 
 /**
@@ -14,7 +15,7 @@ class Say extends Command {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public function execute() {
         $name = null;

@@ -3,6 +3,7 @@
 
 namespace hello\world;
 
+use \Exception;
 use bheisig\cli\App;
 use bheisig\cli\IO;
 
@@ -40,7 +41,7 @@ try {
      */
 
     $app->run();
-} catch (\Exception $e) {
+} catch (Exception $e) {
     IO::err($e->getMessage());
 
     exit(255);

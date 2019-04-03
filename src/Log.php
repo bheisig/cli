@@ -24,6 +24,8 @@
 
 namespace bheisig\cli;
 
+use \RuntimeException;
+
 /**
  * Logger
  */
@@ -364,7 +366,7 @@ class Log {
      *
      * @param string $text Unformatted text
      * @return string Formatted text
-     * @throws \RuntimeException on error
+     * @throws RuntimeException on error
      */
     protected function formatText($text) {
         $syntax = [
@@ -395,7 +397,7 @@ class Log {
         );
 
         if (!is_string($result)) {
-            throw new \RuntimeException('Unable to format text', ExitApp::RUNTIME_ERROR);
+            throw new RuntimeException('Unable to format text', ExitApp::RUNTIME_ERROR);
         }
 
         return $result;

@@ -24,6 +24,8 @@
 
 namespace bheisig\cli;
 
+use \Exception;
+
 /**
  * Handling JSON-formatted files
  */
@@ -38,14 +40,14 @@ class JSONFile {
      *
      * @return array Return content as an array
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public static function read($file, $force = false) {
         if (!is_readable($file)) {
             if ($force === true) {
                 return [];
             } else {
-                throw new \Exception(sprintf(
+                throw new Exception(sprintf(
                     'Unable to read file "%s"',
                     $file
                 ), ExitApp::RUNTIME_ERROR);
@@ -55,7 +57,7 @@ class JSONFile {
         $fileContent = file_get_contents($file);
 
         if ($fileContent === false) {
-            throw new \Exception(sprintf(
+            throw new Exception(sprintf(
                 'Unable to read file "%s"',
                 $file
             ), ExitApp::RUNTIME_ERROR);
@@ -67,7 +69,7 @@ class JSONFile {
         );
 
         if ($result === false) {
-            throw new \Exception(sprintf(
+            throw new Exception(sprintf(
                 'File "%s" contains invalid JSON data.',
                 ExitApp::RUNTIME_ERROR
             ));
@@ -82,13 +84,13 @@ class JSONFile {
      * @param string $file File path
      * @param array $content Content
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public static function write($file, array $content) {
         $jsonString = json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
         if ($jsonString === false) {
-            throw new \Exception('Unable to convert array to JSON string', ExitApp::RUNTIME_ERROR);
+            throw new Exception('Unable to convert array to JSON string', ExitApp::RUNTIME_ERROR);
         }
 
         $status = file_put_contents(
@@ -97,7 +99,7 @@ class JSONFile {
         );
 
         if ($status === false) {
-            throw new \Exception(sprintf(
+            throw new Exception(sprintf(
                 'Unable to write JSON-formatted content to file %s',
                 $file
             ), ExitApp::RUNTIME_ERROR);

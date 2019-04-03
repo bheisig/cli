@@ -24,6 +24,8 @@
 
 namespace bheisig\cli\Command;
 
+use \Exception;
+
 /**
  * Command "list"
  */
@@ -34,7 +36,7 @@ class ListCommands extends Command {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public function execute() {
         $this->log

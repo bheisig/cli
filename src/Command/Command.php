@@ -24,6 +24,7 @@
 
 namespace bheisig\cli\Command;
 
+use \Exception;
 use bheisig\cli\IO;
 use bheisig\cli\Log;
 
@@ -42,7 +43,7 @@ abstract class Command implements Executes {
     /**
      * Logger
      *
-     * @var \bheisig\cli\Log
+     * @var Log
      */
     protected $log;
 
@@ -69,7 +70,7 @@ abstract class Command implements Executes {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public function setup() {
         $this->start = time();
@@ -82,7 +83,7 @@ abstract class Command implements Executes {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public function tearDown() {
         $seconds = time() - $this->start;
@@ -223,6 +224,15 @@ EOF
         return '';
     }
 
+    /**
+     * Ask for permission
+     *
+     * @param string $question Question
+     *
+     * @return bool true means yes, false means no
+     *
+     * @throws Exception on error
+     */
     protected function askForPermission($question) {
         $answer = strtolower(
             IO::in($question  . ' [Y|n]:')

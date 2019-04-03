@@ -24,6 +24,7 @@
 
 namespace bheisig\cli\Command;
 
+use \Exception;
 use bheisig\cli\Config;
 use bheisig\cli\JSONFile;
 
@@ -37,7 +38,7 @@ class ConfigTest extends Command {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public function execute() {
         $this->log

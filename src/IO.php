@@ -24,6 +24,8 @@
 
 namespace bheisig\cli;
 
+use \Exception;
+
 /**
  * Input/output
  */
@@ -71,7 +73,7 @@ class IO {
      *
      * @return string User input
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public static function in($message, ...$args) {
         if ($message !== '') {
@@ -90,7 +92,7 @@ class IO {
         $input = fgets(STDIN);
 
         if ($input === false) {
-            throw new \Exception('Unable to read from STDIN');
+            throw new Exception('Unable to read from STDIN');
         }
 
         return trim($input);

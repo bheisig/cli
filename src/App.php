@@ -24,6 +24,9 @@
 
 namespace bheisig\cli;
 
+use \Exception;
+use \RuntimeException;
+use \Throwable;
 use bheisig\cli\Command\Executes;
 
 /**
@@ -69,14 +72,14 @@ class App implements ExitApp {
     /**
      * Logger
      *
-     * @var \bheisig\cli\Log
+     * @var Log
      */
     protected $log;
 
     /**
      * Constructor
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public function __construct() {
         $this
@@ -89,11 +92,11 @@ class App implements ExitApp {
     /**
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     protected function checkEnvironment() {
         if (PHP_SAPI !== 'cli') {
-            throw new \Exception(sprintf(
+            throw new Exception(sprintf(
                 'This application must be invoked by the CLI interpreter of PHP, not the %s SAPI',
                 PHP_SAPI
             ), ExitApp::BAD_USER_INTERACTION);
@@ -146,7 +149,7 @@ class App implements ExitApp {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     protected function invokeStandardOptions() {
         return $this
@@ -184,7 +187,7 @@ class App implements ExitApp {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public function addConfigFile($file, $force = false) {
         $settings = JSONFile::read($file, $force);
@@ -246,7 +249,7 @@ class App implements ExitApp {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public function addOption($short = null, $long = null, $value = self::NO_VALUE) {
         switch ($value) {
@@ -255,7 +258,7 @@ class App implements ExitApp {
             case self::OPTION_NOT_REQUIRED:
                 break;
             default:
-                throw new \Exception(
+                throw new Exception(
                     'Invalid value',
                     ExitApp::BAD_USER_INTERACTION
                 );
@@ -267,7 +270,7 @@ class App implements ExitApp {
 
         if (isset($short)) {
             if (!is_string($short) || strlen($short) !== 1) {
-                throw new \Exception(sprintf(
+                throw new Exception(sprintf(
                     'Bad short option "%s"',
                     $short
                 ), ExitApp::BAD_USER_INTERACTION);
@@ -278,7 +281,7 @@ class App implements ExitApp {
 
         if (isset($long)) {
             if (!is_string($long) || strlen($long) <= 1) {
-                throw new \Exception(sprintf(
+                throw new Exception(sprintf(
                     'Bad long option "%s"',
                     $long
                 ), ExitApp::BAD_USER_INTERACTION);
@@ -295,7 +298,7 @@ class App implements ExitApp {
     /**
      * Run the application
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public function run() {
         try {
@@ -309,7 +312,7 @@ class App implements ExitApp {
                 ->addRuntimeSettings()
                 ->configureLogger()
                 ->satisfyUserChoice();
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->abort($exception);
         }
     }
@@ -317,9 +320,9 @@ class App implements ExitApp {
     /**
      * Print exception message, stack trace (only in debug mode) and exit application with standardized exit code
      *
-     * @param \Throwable $exception Exception
+     * @param Throwable $exception Exception
      */
-    protected function abort(\Throwable $exception) {
+    protected function abort(Throwable $exception) {
         $messageParts = explode(PHP_EOL, $exception->getMessage());
 
         foreach ($messageParts as $messagePart) {
@@ -334,7 +337,7 @@ class App implements ExitApp {
             }
 
             foreach ($stackTrace as $line) {
-                $this->log->debug($line);
+                $this->log->debug('    ' . $line);
             }
         }
 
@@ -358,7 +361,7 @@ class App implements ExitApp {
     /**
      * Try to find out what the user wants
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     protected function satisfyUserChoice() {
         // <APP NAME> --version:
@@ -391,7 +394,7 @@ class App implements ExitApp {
                 break;
             // <APP NAME> <UNKNOWN COMMAND>:
             default:
-                throw new \RuntimeException(sprintf(
+                throw new RuntimeException(sprintf(
                     'Command "%s" not found',
                     $this->config['arguments'][0]
                 ), ExitApp::BAD_USER_INTERACTION);
@@ -404,7 +407,7 @@ class App implements ExitApp {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     protected function parseOptions() {
         $this->config['options'] = [];
@@ -444,7 +447,7 @@ class App implements ExitApp {
                                     substr($this->config['args'][$i + 1], 0, strlen($prefix)) !== $prefix) {
                                     $value = $this->config['args'][$i + 1];
                                 } else {
-                                    throw new \Exception(sprintf(
+                                    throw new Exception(sprintf(
                                         'Option "%s" needs a value',
                                         $key
                                     ), ExitApp::BAD_USER_INTERACTION);
@@ -491,7 +494,7 @@ class App implements ExitApp {
                     );
                 }
 
-                throw new \Exception($message, ExitApp::BAD_USER_INTERACTION);
+                throw new Exception($message, ExitApp::BAD_USER_INTERACTION);
             }
         }
 
@@ -576,7 +579,7 @@ class App implements ExitApp {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     protected function loadArgs() {
         $this->config['args'] = $GLOBALS['argv'];
@@ -601,7 +604,7 @@ class App implements ExitApp {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     protected function loadOptionalConfigFiles() {
         $appName = $this->config['composer']['extra']['name'];
@@ -644,7 +647,7 @@ class App implements ExitApp {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     protected function loadAdditionalConfigFiles() {
         $additionalConfigFiles = [];
@@ -658,7 +661,7 @@ class App implements ExitApp {
                     case 'array':
                         foreach ($value as $item) {
                             if (!is_string($item)) {
-                                throw new \Exception(sprintf(
+                                throw new Exception(sprintf(
                                     'Unknown value "%s" for option "%s"',
                                     $item,
                                     $option
@@ -669,7 +672,7 @@ class App implements ExitApp {
                         }
                         break;
                     default:
-                        throw new \Exception(sprintf(
+                        throw new Exception(sprintf(
                             'Unknown value "%s" for option "%s"',
                             $value,
                             $option
@@ -690,7 +693,7 @@ class App implements ExitApp {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     protected function addRuntimeSettings() {
         $newSettings = [];
@@ -704,7 +707,7 @@ class App implements ExitApp {
                     case 'array':
                         foreach ($value as $item) {
                             if (!is_string($item)) {
-                                throw new \Exception(sprintf(
+                                throw new Exception(sprintf(
                                     'Unknown value "%s" for option "%s"',
                                     $item,
                                     $option
@@ -715,7 +718,7 @@ class App implements ExitApp {
                         }
                         break;
                     default:
-                        throw new \Exception(sprintf(
+                        throw new Exception(sprintf(
                             'Unknown value "%s" for option "%s"',
                             $value,
                             $option
@@ -730,7 +733,7 @@ class App implements ExitApp {
 
             if ($key === false || $value === false ||
                 strlen($key) === 0 || strlen($value) <= 1) {
-                throw new \Exception('Invalid runtime settings', ExitApp::BAD_USER_INTERACTION);
+                throw new Exception('Invalid runtime settings', ExitApp::BAD_USER_INTERACTION);
             }
 
             // Crop "=":
@@ -822,13 +825,13 @@ class App implements ExitApp {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     protected function loadComposerFile() {
         $composerFile = $this->config['appDir'] . '/composer.json';
 
         if (!is_readable($composerFile)) {
-            throw new \Exception(sprintf(
+            throw new Exception(sprintf(
                 'Composer file "%s" is missing or not readable',
                 $composerFile
             ), ExitApp::RUNTIME_ERROR);
@@ -838,7 +841,7 @@ class App implements ExitApp {
 
         if (!array_key_exists('extra', $this->config['composer']) ||
             !is_array($this->config['composer']['extra'])) {
-            throw new \Exception(sprintf(
+            throw new Exception(sprintf(
                 'Missing "extra" in composer file "%s"',
                 $composerFile
             ), ExitApp::RUNTIME_ERROR);
@@ -851,7 +854,7 @@ class App implements ExitApp {
 
         foreach ($keys as $key) {
             if (!array_key_exists($key, $this->config['composer']['extra'])) {
-                throw new \Exception(sprintf(
+                throw new Exception(sprintf(
                     'Missing "extra.%s" in composer file "%s"',
                     $key,
                     $composerFile
@@ -867,7 +870,7 @@ class App implements ExitApp {
      *
      * @param string $command Command name
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     protected function executeCommand($command) {
         $class = $this->config['commands'][$command]['class'];
@@ -875,7 +878,7 @@ class App implements ExitApp {
         if (!class_exists($class) ||
             !is_subclass_of($class, __NAMESPACE__ . '\\Command\\Executes')
         ) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'Command "%s" not found',
                 $command
             ), ExitApp::BAD_USER_INTERACTION);

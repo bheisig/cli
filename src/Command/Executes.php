@@ -24,6 +24,8 @@
 
 namespace bheisig\cli\Command;
 
+use \Exception;
+
 /**
  * Interface for commands
  */
@@ -34,7 +36,7 @@ interface Executes {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public function setup();
 
@@ -43,7 +45,7 @@ interface Executes {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public function execute();
 
@@ -52,7 +54,7 @@ interface Executes {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public function tearDown();
 

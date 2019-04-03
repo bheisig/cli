@@ -24,6 +24,8 @@
 
 namespace bheisig\cli\Command;
 
+use \Exception;
+
 /**
  * Command "print-config"
  */
@@ -34,7 +36,7 @@ class PrintConfig extends Command {
      *
      * @return self Returns itself
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public function execute() {
         $this->log
@@ -58,7 +60,7 @@ class PrintConfig extends Command {
         $prettyConfig = json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
         if ($prettyConfig === false) {
-            throw new \Exception('Unable to parse configuration settings');
+            throw new Exception('Unable to parse configuration settings');
         }
 
         $this->log

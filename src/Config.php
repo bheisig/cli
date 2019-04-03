@@ -24,10 +24,13 @@
 
 namespace bheisig\cli;
 
+use \ArrayIterator;
+use \Exception;
+
 /**
  * Configuration settings
  */
-class Config extends \ArrayIterator {
+class Config extends ArrayIterator {
 
     /**
      * Validate configuration settings
@@ -37,7 +40,7 @@ class Config extends \ArrayIterator {
      *
      * @return string[] List of validation errors
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     public function validate(array $settings, array $rules) {
         return $this->validateTopic($settings, $rules);
@@ -52,7 +55,7 @@ class Config extends \ArrayIterator {
      *
      * @return string[] List of validation errors
      *
-     * @throws \Exception on error
+     * @throws Exception on error
      */
     protected function validateTopic(array $settings, array $rules, $prefix = '') {
         $errors = [];
@@ -146,7 +149,7 @@ class Config extends \ArrayIterator {
                                     }
                                     break;
                                 default:
-                                    throw new \Exception(sprintf(
+                                    throw new Exception(sprintf(
                                         'Unknown value "%s" for "items"',
                                         $rule['items']
                                     ), ExitApp::RUNTIME_ERROR);
@@ -259,7 +262,7 @@ class Config extends \ArrayIterator {
                     }
                     break;
                 default:
-                    throw new \Exception(sprintf(
+                    throw new Exception(sprintf(
                         'Unknown type "%s" in schema',
                         $rule['type']
                     ), ExitApp::RUNTIME_ERROR);
