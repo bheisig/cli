@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 -   Provide standardized exit codes to close application
 -   Print stack trace in debug mode after something went wrong
+-   Allow multi-line log events in combination with format tags
+-   Allow repeating format tags
+-   Allow format tags in other log levels than `info`
 
 
 ### Fixed

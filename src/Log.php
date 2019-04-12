@@ -370,18 +370,19 @@ class Log {
      */
     protected function formatText($text) {
         $syntax = [
-            '/\<strong\>(.*)\<\/strong\>/' => "\033[1m$1\033[0m",
-            '/\<u\>(.*)\<\/u\>/' => "\033[4m$1\033[0m",
-            '/\<dim\>(.*)\<\/dim\>/' => "\033[2m$1\033[0m",
-            '/\<fatal\>(.*)\<\/fatal\>/' => "\033[" . $this->colors[self::FATAL] . "m$1\033[0m",
-            '/\<error\>(.*)\<\/error\>/' => "\033[" . $this->colors[self::ERROR] . "m$1\033[0m",
-            '/\<warning\>(.*)\<\/warning\>/' => "\033[" . $this->colors[self::WARNING] . "m$1\033[0m",
-            '/\<notice\>(.*)\<\/notice\>/' => "\033[" . $this->colors[self::NOTICE] . "m$1\033[0m",
-            '/\<debug\>(.*)\<\/debug\>/' => "\033[" . $this->colors[self::DEBUG] . "m$1\033[0m",
-            '/\<red\>(.*)\<\/red\>/' => "\033[31m$1\033[0m",
-            '/\<yellow\>(.*)\<\/yellow\>/' => "\033[33m$1\033[0m",
-            '/\<green\>(.*)\<\/green\>/' => "\033[32m$1\033[0m",
-            '/\<grey\>(.*)\<\/grey\>/' => "\033[37m$1\033[0m",
+            '/\<strong\>/m' => "\033[1m",
+            '/\<u\>/m' => "\033[4m",
+            '/\<dim\>/m' => "\033[2m",
+            '/\<fatal\>/m' => "\033[" . $this->colors[self::FATAL] . "m",
+            '/\<error\>/m' => "\033[" . $this->colors[self::ERROR] . "m",
+            '/\<warning\>/m' => "\033[" . $this->colors[self::WARNING] . "m",
+            '/\<notice\>/m' => "\033[" . $this->colors[self::NOTICE] . "m",
+            '/\<debug\>/m' => "\033[" . $this->colors[self::DEBUG] . "m",
+            '/\<red\>/m' => "\033[31m",
+            '/\<yellow\>/m' => "\033[33m",
+            '/\<green\>/m' => "\033[32m",
+            '/\<grey\>/m' => "\033[37m",
+            '/\<\/([a-z]+)\>/m' => "\033[0m",
         ];
 
         $replacements = '$1';
