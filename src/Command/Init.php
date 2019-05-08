@@ -32,6 +32,9 @@ use bheisig\cli\JSONFile;
 
 /**
  * Command "init"
+ *
+ * @todo required = false doesn't work for type = array!
+ * @todo do not print empty braces for non-defined default value! (handle with care because of empty, but valid values)
  */
 class Init extends Command {
 
