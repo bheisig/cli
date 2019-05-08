@@ -47,7 +47,7 @@ For a simple application look at the `example/` folder.
 Go to your project folder and require this framework via Composer:
 
 ~~~ {.bash}
-composer require "bheisig/cli=>=0.2"
+composer require bheisig/cli
 ~~~
 
 

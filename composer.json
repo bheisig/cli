@@ -26,7 +26,9 @@
     },
     "require-dev": {
         "php": ">=7.1.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
         "jakub-onderka/php-parallel-lint": "^1.0",
+        "phpcompatibility/php-compatibility": "*",
         "phploc/phploc": "^4.0",
         "phpmd/phpmd" : "@stable",
         "phpstan/phpstan": "^0.11.5",
@@ -35,6 +37,7 @@
         "sensiolabs/security-checker": "^5",
         "squizlabs/php_codesniffer": "*"
     },
+    "prefer-stable" : true,
     "autoload": {
         "psr-4": {
             "bheisig\\cli\\": "src/"
@@ -45,12 +48,14 @@
             "@composer syntax-check",
             "@composer validate",
             "@composer security-checker",
+            "@composer phpcompatibility",
             "@composer phpcpd",
             "@composer phpcs",
             "@composer phpstan"
         ],
         "gitstats": "gitstats -c project_name=`composer config name` . gitstats",
         "gource": "gource -1280x720 --seconds-per-day 3 --auto-skip-seconds 1 --title `composer config name`",
+        "phpcompatibility": "./vendor/bin/phpcs -p --colors --extensions=php --standard=PHPCompatibility --runtime-set testVersion 7.0 src/",
         "phpcpd": "./vendor/bin/phpcpd src/",
         "phpcs": "./vendor/bin/phpcs --extensions=php --standard=PSR1,PSR2 --exclude=PSR2.Classes.ClassDeclaration,Squiz.Functions.MultiLineFunctionDeclaration src/ example/bin example/src",
         "phploc": "./vendor/bin/phploc --exclude=vendor --exclude=docs --exclude=example .",
@@ -64,6 +69,7 @@
         "ci": "Perform continuous integration tasks",
         "gitstats": "Create Git statistics",
         "gource": "Visualize Git history",
+        "phpcompatibility": "Run PHP compatibility checks",
         "phpcpd": "Detect copy/paste in source code",
         "phpcs": "Detect violations of defined coding standards",
         "phploc": "Print source code statistics",

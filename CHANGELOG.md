@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ##  [Unreleased]
 
+_tbd_
+
+
+##  [0.3] – 2019-05-08
+
 
 ### Added
 
@@ -55,5 +60,6 @@ Happy holidays 🎄
 Initial release
 
 
-[Unreleased]: https://github.com/bheisig/cli/compare/0.2...HEAD
+[Unreleased]: https://github.com/bheisig/cli/compare/0.3...HEAD
+[0.3]: https://github.com/bheisig/cli/compare/0.2...0.3
 [0.2]: https://github.com/bheisig/cli/compare/0.1...0.2
