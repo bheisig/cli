@@ -8,7 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ##  [Unreleased]
 
-_tbd_
+
+### Fixed
+
+-   Print last debug message (spent time, consumed memory etc.) to STDERR
 
 
 ##  [0.3] – 2019-05-08

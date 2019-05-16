@@ -86,6 +86,8 @@ abstract class Command implements Executes {
      * @throws Exception on error
      */
     public function tearDown() {
+        $this->log->printAsMessage();
+
         $seconds = time() - $this->start;
 
         switch ($seconds) {
