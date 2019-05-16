@@ -71,8 +71,8 @@ class JSONFile {
         if ($result === false) {
             throw new Exception(sprintf(
                 'File "%s" contains invalid JSON data.',
-                ExitApp::RUNTIME_ERROR
-            ));
+                $file
+            ), ExitApp::RUNTIME_ERROR);
         }
 
         return $result;
