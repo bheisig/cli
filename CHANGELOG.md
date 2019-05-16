@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ##  [Unreleased]
 
 
+### Added
+
+-   Add base service with access to configuration and logging
+
+
 ### Fixed
 
 -   Print last debug message (spent time, consumed memory etc.) to STDERR
