@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Add base service with access to configuration and logging
 -   Add service to handle YAML
 -   Add service to handle user interaction
+-   Add service to execute shell commands
 
 ### Changed
 
