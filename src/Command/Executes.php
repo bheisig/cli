@@ -22,6 +22,8 @@
  * @link https://github.com/bheisig/cli
  */
 
+declare(strict_types=1);
+
 namespace bheisig\cli\Command;
 
 use \Exception;
@@ -34,16 +36,12 @@ interface Executes {
     /**
      * Process some routines before executing command
      *
-     * @return self Returns itself
-     *
      * @throws Exception on error
      */
     public function setup();
 
     /**
      * Execute command
-     *
-     * @return self Returns itself
      *
      * @throws Exception on error
      */
@@ -52,16 +50,12 @@ interface Executes {
     /**
      * Process some routines after executing command
      *
-     * @return self Returns itself
-     *
      * @throws Exception on error
      */
     public function tearDown();
 
     /**
      * Print usage of command
-     *
-     * @return self Returns itself
      */
     public function printUsage();
 

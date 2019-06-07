@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace hello\world\Command;
 
 use \Exception;
@@ -12,8 +14,6 @@ class Say extends Command {
 
     /**
      * Execute command
-     *
-     * @return self Returns itself
      *
      * @throws Exception on error
      */
@@ -45,14 +45,10 @@ class Say extends Command {
         }
 
         $this->log->notice($message);
-
-        return $this;
     }
 
     /**
      * Print usage of command
-     *
-     * @return self Returns itself
      */
     public function printUsage() {
         $this->log->info(
@@ -83,8 +79,6 @@ Options:
             $this->getName(),
             $this->getDescription()
         );
-
-        return $this;
     }
 
 }

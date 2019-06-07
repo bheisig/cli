@@ -22,6 +22,8 @@
  * @link https://github.com/bheisig/cli
  */
 
+declare(strict_types=1);
+
 namespace bheisig\cli\Service;
 
 use \Exception;
@@ -41,7 +43,7 @@ class YAML extends Service {
      *
      * @throws Exception on error
      */
-    public function decode($yaml) {
+    public function decode(string $yaml) {
         $result = yaml_parse($yaml);
 
         if ($result === false) {
@@ -63,7 +65,7 @@ class YAML extends Service {
      *
      * @throws Exception on error
      */
-    public function encode($value) {
+    public function encode($value): string {
         $result = yaml_emit(
             $value,
             YAML_UTF8_ENCODING,
@@ -89,7 +91,7 @@ class YAML extends Service {
      *
      * @throws Exception on error
      */
-    public function read($file) {
+    public function read(string $file) {
         // Prevent security problems.
         // See https://www.php.net/manual/en/function.yaml-parse-file.php for more details.
         ini_set('yaml.decode_php', 0);
@@ -116,7 +118,7 @@ class YAML extends Service {
      *
      * @throws Exception on error
      */
-    public function write($file, array $content) {
+    public function write(string $file, array $content): self {
         $result = yaml_emit_file($file, $content, YAML_UTF8_ENCODING, YAML_CRLN_BREAK);
 
         if ($result === false) {

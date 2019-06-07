@@ -22,6 +22,8 @@
  * @link https://github.com/bheisig/cli
  */
 
+declare(strict_types=1);
+
 namespace bheisig\cli;
 
 use \RuntimeException;
@@ -148,7 +150,7 @@ class Log {
      * @param int $verbosity Verbosity; defaults to everything except debug messages
      * @param bool $colorize Colorize output? Defaults to true
      */
-    public function __construct($verbosity = self::ALL & ~self::DEBUG, $colorize = true) {
+    public function __construct(int $verbosity = self::ALL & ~self::DEBUG, bool $colorize = true) {
         $this->setVerbosity($verbosity);
         $this->printColors($colorize);
     }
@@ -160,7 +162,7 @@ class Log {
      *
      * @return self Returns itself
      */
-    public function setVerbosity($verbosity) {
+    public function setVerbosity(int $verbosity): self {
         $this->verbosity = $verbosity;
         return $this;
     }
@@ -172,7 +174,7 @@ class Log {
      *
      * @return self Returns itself
      */
-    public function printColors($colorize) {
+    public function printColors(bool $colorize): self {
         $this->colorize = $colorize;
         return $this;
     }
@@ -182,7 +184,7 @@ class Log {
      *
      * @return self Returns itself
      */
-    public function printAsOutput() {
+    public function printAsOutput(): self {
         $this->output = self::PRINT_AS_OUTPUT;
         return $this;
     }
@@ -192,7 +194,7 @@ class Log {
      *
      * @return self Returns itself
      */
-    public function printAsMessage() {
+    public function printAsMessage(): self {
         $this->output = self::PRINT_AS_MESSAGE;
         return $this;
     }
@@ -209,7 +211,7 @@ class Log {
      *
      * @see sprintf()
      */
-    public function event($level, $value, ...$args) {
+    public function event(int $level, string $value, ...$args): self {
         if ($level & $this->verbosity) {
             $message = $value;
 
@@ -258,7 +260,7 @@ class Log {
      *
      * @see sprintf()
      */
-    public function fatal($value, ...$args) {
+    public function fatal(string $value, ...$args): self {
         return call_user_func_array(
             [__CLASS__, 'event'],
             array_merge([self::FATAL, $value], $args)
@@ -275,7 +277,7 @@ class Log {
      *
      * @see sprintf()
      */
-    public function error($value, ...$args) {
+    public function error(string $value, ...$args): self {
         return call_user_func_array(
             [__CLASS__, 'event'],
             array_merge([self::ERROR, $value], $args)
@@ -292,7 +294,7 @@ class Log {
      *
      * @see sprintf()
      */
-    public function warning($value, ...$args) {
+    public function warning(string $value, ...$args): self {
         return call_user_func_array(
             [__CLASS__, 'event'],
             array_merge([self::WARNING, $value], $args)
@@ -309,7 +311,7 @@ class Log {
      *
      * @see sprintf()
      */
-    public function notice($value, ...$args) {
+    public function notice(string $value, ...$args): self {
         return call_user_func_array(
             [__CLASS__, 'event'],
             array_merge([self::NOTICE, $value], $args)
@@ -326,7 +328,7 @@ class Log {
      *
      * @see sprintf()
      */
-    public function info($value, ...$args) {
+    public function info(string $value, ...$args): self {
         return call_user_func_array(
             [__CLASS__, 'event'],
             array_merge([self::INFO, $value], $args)
@@ -343,7 +345,7 @@ class Log {
      *
      * @see sprintf()
      */
-    public function debug($value, ...$args) {
+    public function debug(string $value, ...$args): self {
         return call_user_func_array(
             [__CLASS__, 'event'],
             array_merge([self::DEBUG, $value], $args)
@@ -355,7 +357,7 @@ class Log {
      *
      * @return self Returns itself
      */
-    public function printEmptyLine() {
+    public function printEmptyLine(): self {
         $this->flush('');
 
         return $this;
@@ -368,7 +370,7 @@ class Log {
      * @return string Formatted text
      * @throws RuntimeException on error
      */
-    protected function formatText($text) {
+    protected function formatText(string $text): string {
         $syntax = [
             '/\<strong\>/m' => "\033[1m",
             '/\<u\>/m' => "\033[4m",
@@ -409,7 +411,7 @@ class Log {
      *
      * @param string $message Message
      */
-    protected function flush($message) {
+    protected function flush(string $message) {
         switch ($this->output) {
             case self::PRINT_AS_OUTPUT:
                 IO::out($message);

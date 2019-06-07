@@ -22,6 +22,8 @@
  * @link https://github.com/bheisig/cli
  */
 
+declare(strict_types=1);
+
 namespace bheisig\cli;
 
 /**
@@ -40,6 +42,6 @@ interface ExitApp {
      *
      * @param int $exitCode Defaults to 0
      */
-    public function close($exitCode = self::WELL_DONE);
+    public function close(int $exitCode = self::WELL_DONE);
 
 }

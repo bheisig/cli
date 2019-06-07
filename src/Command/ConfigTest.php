@@ -22,6 +22,8 @@
  * @link https://github.com/bheisig/cli
  */
 
+declare(strict_types=1);
+
 namespace bheisig\cli\Command;
 
 use \Exception;
@@ -35,8 +37,6 @@ class ConfigTest extends Command {
 
     /**
      * Execute command
-     *
-     * @return self Returns itself
      *
      * @throws Exception on error
      */
@@ -63,8 +63,6 @@ class ConfigTest extends Command {
                 $this->log->warning('✘ %s', $error);
             }
         }
-
-        return $this;
     }
 
 }

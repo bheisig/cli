@@ -1,48 +1,51 @@
 #!/usr/bin/env php
 <?php
 
+declare(strict_types=1);
+
 namespace hello\world;
 
 use \Exception;
+use \Throwable;
 use bheisig\cli\App;
 use bheisig\cli\IO;
+
+set_exception_handler(function (Throwable $exception) {
+    IO::err($exception->getMessage());
+
+    exit(1);
+});
+
+set_error_handler(function ($level, $message, $file, $line) {
+    throw new Exception(sprintf(
+        '%s [%s:%s]',
+        $message,
+        $file,
+        $line
+    ), $level);
+});
+
+// Disable execution time
+// (can be overwritten by max_execution_time):
+set_time_limit(0);
 
 try {
     require_once __DIR__ . '/../vendor/autoload.php';
 
-    $app = new App();
-
-    /**
-     * Add settings:
-     */
-
-    $app
+    (new App())
+        // Add settings:
         ->addConfigSettings([
-                'appDir' => __DIR__ . '/..'
-        ]);
-
-    /**
-     * Add commands:
-     */
-
-    $app
-        ->addCommand('say', __NAMESPACE__ . '\\Command\\Say', 'Say "Hello, World!"');
-
-    /**
-     * Add options:
-     */
-
-    $app
+            'appDir' => __DIR__ . '/..'
+        ])
+        // Add commands:
+        ->addCommand('say', __NAMESPACE__ . '\\Command\\Say', 'Say "Hello, World!"')
+        // Add options:
         ->addOption('r', 'reverse', App::NO_VALUE)
-        ->addOption('n', 'name', App::OPTION_NOT_REQUIRED);
-
-    /**
-     * Run app:
-     */
-
-    $app->run();
+        ->addOption('n', 'name', App::OPTION_NOT_REQUIRED)
+        // Run app:
+        ->run();
 } catch (Exception $e) {
     IO::err($e->getMessage());
 
-    exit(255);
+    exit(1);
 }

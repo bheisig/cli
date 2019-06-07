@@ -22,6 +22,8 @@
  * @link https://github.com/bheisig/cli
  */
 
+declare(strict_types=1);
+
 namespace bheisig\cli\Command;
 
 use \Exception;
@@ -40,8 +42,6 @@ class Init extends Command {
 
     /**
      * Execute command
-     *
-     * @return self Returns itself
      *
      * @throws Exception on error
      */
@@ -92,7 +92,7 @@ class Init extends Command {
         if (file_exists($configFile)) {
             $this->log->notice('Configuration file already exists.');
 
-            if (!$this->askForPermission('Do you want to overwrite it?')) {
+            if (!$this->userInteraction->askYesNo('Do you want to overwrite it?')) {
                 $this->log->notice('Skipping');
                 return $this;
             }
@@ -152,7 +152,7 @@ Validate your configuration settings with:
      *
      * @throws Exception on error
      */
-    protected function walk(array $rules, array $defaults, $prefix = '') {
+    protected function walk(array $rules, array $defaults, string $prefix = ''): array {
         $config = [];
 
         foreach ($rules as $rule) {
@@ -249,7 +249,7 @@ Validate your configuration settings with:
      *
      * @throws Exception on error
      */
-    protected function askToSkip() {
+    protected function askToSkip(): bool {
         $question = 'This part is optional. Do you like to configure it? [y|N]:';
         $answer = strtolower(IO::in($question));
 
@@ -285,7 +285,13 @@ Validate your configuration settings with:
      *
      * @throws Exception on error
      */
-    protected function askForString($key, $required = false, $default = null, array $values = [], $minLength = 0) {
+    protected function askForString(
+        string $key,
+        bool $required = false,
+        string $default = null,
+        array $values = [],
+        int $minLength = 0
+    ) {
         $question = sprintf(
             'What is the value for configuration setting "%s"',
             $key
@@ -346,7 +352,13 @@ Validate your configuration settings with:
      * @throws Exception on error
      */
     protected function askForInteger(
-        $key, $required = false, $default = null, $gt = null, $ge = null, $lt = null, $le = null
+        string $key,
+        bool $required = false,
+        int $default = null,
+        int $gt = null,
+        int $ge = null,
+        int $lt = null,
+        int $le = null
     ) {
         $question = sprintf(
             'What is the value for configuration setting "%s"?',
@@ -399,7 +411,11 @@ Validate your configuration settings with:
      *
      * @throws Exception on error
      */
-    protected function askForBoolean($key, $required = false, $default = null) {
+    protected function askForBoolean(
+        string $key,
+        bool $required = false,
+        bool $default = null
+    ) {
         $question = sprintf(
             'Enable configuration setting "%s"?',
             $key
@@ -466,7 +482,13 @@ Validate your configuration settings with:
      * @throws Exception on error
      */
     protected function askForArray(
-        $key, $required = false, $default = null, array $values = [], $minCount = 0, $items = 'string', $minLength = 0
+        string $key,
+        bool $required = false,
+        array $default = null,
+        array $values = [],
+        int $minCount = 0,
+        string $items = 'string',
+        int $minLength = 0
     ) {
         $question = sprintf(
             'What is the value for configuration setting "%s"',
@@ -590,7 +612,12 @@ Validate your configuration settings with:
      *
      * @throws Exception on error
      */
-    protected function askForMixed($key, $required = false, $default = null, array $values = []) {
+    protected function askForMixed(
+        string $key,
+        bool $required = false,
+        $default = null,
+        array $values = []
+    ) {
         $question = sprintf(
             'What is the value for configuration setting "%s"',
             $key
@@ -676,7 +703,7 @@ Validate your configuration settings with:
      *
      * @throws Exception on error
      */
-    protected function createDir($path) {
+    protected function createDir(string $path): self {
         if (!is_dir($path)) {
             $this->log->info('Create directory %s', $path);
 
@@ -703,7 +730,7 @@ Validate your configuration settings with:
      *
      * @throws Exception on error
      */
-    protected function copyFile($sourceFile, $destFile) {
+    protected function copyFile(string $sourceFile, string $destFile): self {
         $status = copy($sourceFile, $destFile);
 
         if ($status === false) {

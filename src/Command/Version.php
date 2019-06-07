@@ -22,6 +22,8 @@
  * @link https://github.com/bheisig/cli
  */
 
+declare(strict_types=1);
+
 namespace bheisig\cli\Command;
 
 use \Exception;
@@ -34,8 +36,6 @@ class Version extends Command {
     /**
      * Execute command
      *
-     * @return self Returns itself
-     *
      * @throws Exception on error
      */
     public function execute() {
@@ -46,8 +46,6 @@ class Version extends Command {
                 $this->config['composer']['extra']['name'],
                 $this->config['composer']['extra']['version']
             );
-
-        return $this;
     }
 
 }

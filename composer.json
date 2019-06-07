@@ -18,12 +18,11 @@
         "source": "https://github.com/bheisig/cli"
     },
     "require": {
-        "php": ">=5.6.0",
+        "php": ">=7.0.0",
         "ext-calendar": "*",
         "ext-date": "*",
         "ext-filter": "*",
-        "ext-json": "*",
-        "ext-yaml": "*"
+        "ext-json": "*"
     },
     "require-dev": {
         "php": ">=7.1.0",
@@ -37,6 +36,14 @@
         "sebastian/phpcpd": "^4.1.0",
         "sensiolabs/security-checker": "^5",
         "squizlabs/php_codesniffer": "*"
+    },
+    "suggest": {
+        "ext-json": "Needed for configuration files",
+        "ext-pcntl": "Allows more CLI magic",
+        "ext-Phar": "Needed for building binaries",
+        "ext-zlib": "Needed for building compressed binaries",
+        "ext-yaml": "Alternative for configuration files",
+        "macfja/phar-builder": "Needed for building binaries"
     },
     "prefer-stable" : true,
     "autoload": {

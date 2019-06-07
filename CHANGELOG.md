@@ -1,27 +1,32 @@
-#   Changelog
+# Changelog
 
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
-##  [Unreleased]
-
+## [Unreleased]
 
 ### Added
 
 -   Add base service with access to configuration and logging
 -   Add service to handle YAML
+-   Add service to handle user interaction
 
+### Changed
+
+-   Drop PHP 5.6 support; minimum required version is 7.0
+-   Declare strict types
+-   `Command::setup()` returns void
+-   `Command::execute()` returns void
+-   `Command::tearDown()` returns void
 
 ### Fixed
 
 -   Print last debug message (spent time, consumed memory etc.) to STDERR
+-   Clarify which PHP extensions are required and which ones are suggested
 
-
-##  [0.3] – 2019-05-08
-
+## [0.3] – 2019-05-08
 
 ### Added
 
@@ -31,16 +36,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 -   Allow repeating format tags
 -   Allow format tags in other log levels than `info`
 
-
 ### Fixed
 
 -   Check environment variables for `HOME`, `USER` and `LOCALAPPDATA` first before trying to load configuration files
 
-
-##  [0.2] – 2018-12-17
+## [0.2] – 2018-12-17
 
 Happy holidays 🎄
-
 
 ### Added
 
@@ -58,16 +60,13 @@ Happy holidays 🎄
 -   Respect environment variables to disable colored output
 -   Also, disable colors if there is no TTY available
 
-
 ### Fixed
 
 -   Let user overwrite a configuration setting if it is an indexed array
 
-
-##  0.1 – 2018-04-24
+## 0.1 – 2018-04-24
 
 Initial release
-
 
 [Unreleased]: https://github.com/bheisig/cli/compare/0.3...HEAD
 [0.3]: https://github.com/bheisig/cli/compare/0.2...0.3

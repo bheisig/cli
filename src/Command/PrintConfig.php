@@ -22,6 +22,8 @@
  * @link https://github.com/bheisig/cli
  */
 
+declare(strict_types=1);
+
 namespace bheisig\cli\Command;
 
 use \Exception;
@@ -33,8 +35,6 @@ class PrintConfig extends Command {
 
     /**
      * Execute command
-     *
-     * @return self Returns itself
      *
      * @throws Exception on error
      */
@@ -66,8 +66,6 @@ class PrintConfig extends Command {
         $this->log
             ->printAsOutput()
             ->info($prettyConfig);
-
-        return $this;
     }
 
 }

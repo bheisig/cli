@@ -22,6 +22,8 @@
  * @link https://github.com/bheisig/cli
  */
 
+declare(strict_types=1);
+
 namespace bheisig\cli;
 
 use \Exception;
@@ -37,7 +39,7 @@ class IO {
      * @param string $line Line
      * @param mixed ...$args (Optional) One or more arguments
      */
-    public static function out($line, ...$args) {
+    public static function out(string $line, ...$args) {
         if (count($args) > 0) {
             $line = call_user_func_array(
                 'sprintf',
@@ -54,7 +56,7 @@ class IO {
      * @param string $message Message
      * @param mixed ...$args (Optional) One or more arguments
      */
-    public static function err($message, ...$args) {
+    public static function err(string $message, ...$args) {
         if (count($args) > 0) {
             $message = call_user_func_array(
                 'sprintf',
@@ -75,7 +77,7 @@ class IO {
      *
      * @throws Exception on error
      */
-    public static function in($message, ...$args) {
+    public static function in(string $message, ...$args) {
         if ($message !== '') {
             if (count($args) > 0) {
                 $message = call_user_func_array(

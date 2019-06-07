@@ -22,6 +22,8 @@
  * @link https://github.com/bheisig/cli
  */
 
+declare(strict_types=1);
+
 namespace bheisig\cli;
 
 use \ArrayIterator;
@@ -42,7 +44,7 @@ class Config extends ArrayIterator {
      *
      * @throws Exception on error
      */
-    public function validate(array $settings, array $rules) {
+    public function validate(array $settings, array $rules): array {
         return $this->validateTopic($settings, $rules);
     }
 
@@ -57,7 +59,7 @@ class Config extends ArrayIterator {
      *
      * @throws Exception on error
      */
-    protected function validateTopic(array $settings, array $rules, $prefix = '') {
+    protected function validateTopic(array $settings, array $rules, string $prefix = ''): array {
         $errors = [];
 
         foreach ($rules as $rule) {

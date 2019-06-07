@@ -22,6 +22,8 @@
  * @link https://github.com/bheisig/cli
  */
 
+declare(strict_types=1);
+
 namespace bheisig\cli;
 
 use \Exception;
@@ -42,7 +44,7 @@ class JSONFile {
      *
      * @throws Exception on error
      */
-    public static function read($file, $force = false) {
+    public static function read(string $file, $force = false): array {
         if (!is_readable($file)) {
             if ($force === true) {
                 return [];
@@ -86,7 +88,7 @@ class JSONFile {
      *
      * @throws Exception on error
      */
-    public static function write($file, array $content) {
+    public static function write(string $file, array $content) {
         $jsonString = json_encode($content, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
         if ($jsonString === false) {

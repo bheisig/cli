@@ -22,6 +22,8 @@
  * @link https://github.com/bheisig/cli
  */
 
+declare(strict_types=1);
+
 namespace bheisig\cli;
 
 use \Exception;
@@ -94,7 +96,7 @@ class App implements ExitApp {
      *
      * @throws Exception on error
      */
-    protected function checkEnvironment() {
+    protected function checkEnvironment(): self {
         if (PHP_SAPI !== 'cli') {
             throw new Exception(sprintf(
                 'This application must be invoked by the CLI interpreter of PHP, not the %s SAPI',
@@ -110,7 +112,7 @@ class App implements ExitApp {
      *
      * @return self Returns itself
      */
-    protected function invokeStandardCommands() {
+    protected function invokeStandardCommands(): self {
         return $this
             ->addCommand(
                 'help',
@@ -151,7 +153,7 @@ class App implements ExitApp {
      *
      * @throws Exception on error
      */
-    protected function invokeStandardOptions() {
+    protected function invokeStandardOptions(): self {
         return $this
             ->addOption('c', 'config', self::OPTION_NOT_REQUIRED)
             ->addOption('h', 'help', self::NO_VALUE)
@@ -167,7 +169,7 @@ class App implements ExitApp {
      *
      * @return self Returns itself
      */
-    protected function invokeLogging() {
+    protected function invokeLogging(): self {
         $this->config['log'] = [
             'colorize' => true,
             'verbosity' => Log::ALL | ~Log::DEBUG
@@ -189,7 +191,7 @@ class App implements ExitApp {
      *
      * @throws Exception on error
      */
-    public function addConfigFile($file, $force = false) {
+    public function addConfigFile(string $file, $force = false): self {
         $settings = JSONFile::read($file, $force);
 
         $this->addConfigSettings($settings);
@@ -204,7 +206,7 @@ class App implements ExitApp {
      *
      * @return self Returns itself
      */
-    public function addConfigSettings(array $settings) {
+    public function addConfigSettings(array $settings): self {
         $this->config = $this->arrayMergeRecursiveOverwrite(
             $this->config,
             $settings
@@ -218,7 +220,7 @@ class App implements ExitApp {
      *
      * @return array
      */
-    public function getConfigSettings() {
+    public function getConfigSettings(): array {
         return $this->config;
     }
 
@@ -231,7 +233,7 @@ class App implements ExitApp {
      *
      * @return self Returns itself
      */
-    public function addCommand($title, $class, $description) {
+    public function addCommand(string $title, string $class, string $description): self {
         $this->config['commands'][$title] = [
             'class' => $class,
             'description' => $description
@@ -251,7 +253,7 @@ class App implements ExitApp {
      *
      * @throws Exception on error
      */
-    public function addOption($short = null, $long = null, $value = self::NO_VALUE) {
+    public function addOption(string $short = null, string $long = null, int $value = self::NO_VALUE): self {
         switch ($value) {
             case self::NO_VALUE:
             case self::OPTION_REQUIRED:
@@ -298,9 +300,11 @@ class App implements ExitApp {
     /**
      * Run the application
      *
+     * @return self Returns itself
+     *
      * @throws Exception on error
      */
-    public function run() {
+    public function run(): self {
         try {
             $this
                 ->loadComposerFile()
@@ -315,6 +319,8 @@ class App implements ExitApp {
         } catch (Exception $exception) {
             $this->abort($exception);
         }
+
+        return $this;
     }
 
     /**
@@ -409,7 +415,7 @@ class App implements ExitApp {
      *
      * @throws Exception on error
      */
-    protected function parseOptions() {
+    protected function parseOptions(): self {
         $this->config['options'] = [];
 
         foreach ($this->options as $option) {
@@ -506,7 +512,7 @@ class App implements ExitApp {
      *
      * @return self Returns itself
      */
-    protected function parseArguments() {
+    protected function parseArguments(): self {
         $this->config['arguments'] = [];
 
         $commandFound =false;
@@ -581,7 +587,7 @@ class App implements ExitApp {
      *
      * @throws Exception on error
      */
-    protected function loadArgs() {
+    protected function loadArgs(): self {
         $this->config['args'] = $GLOBALS['argv'];
 
         return $this;
@@ -606,7 +612,7 @@ class App implements ExitApp {
      *
      * @throws Exception on error
      */
-    protected function loadOptionalConfigFiles() {
+    protected function loadOptionalConfigFiles(): self {
         $appName = $this->config['composer']['extra']['name'];
 
         // Load default settings…
@@ -649,7 +655,7 @@ class App implements ExitApp {
      *
      * @throws Exception on error
      */
-    protected function loadAdditionalConfigFiles() {
+    protected function loadAdditionalConfigFiles(): self {
         $additionalConfigFiles = [];
 
         foreach ($this->config['options'] as $option => $value) {
@@ -695,7 +701,7 @@ class App implements ExitApp {
      *
      * @throws Exception on error
      */
-    protected function addRuntimeSettings() {
+    protected function addRuntimeSettings(): self {
         $newSettings = [];
 
         foreach ($this->config['options'] as $option => $value) {
@@ -768,7 +774,7 @@ class App implements ExitApp {
      *
      * @return array
      */
-    protected function buildSettings($keys, $value) {
+    protected function buildSettings(array $keys, $value): array {
         $result = [];
 
         $index = array_shift($keys);
@@ -795,7 +801,7 @@ class App implements ExitApp {
      *
      * @return self Returns itself
      */
-    protected function configureLogger() {
+    protected function configureLogger(): self {
         $appNoColor = strtoupper($this->config['composer']['extra']['name']) . '_NOCOLOR';
 
         if (array_key_exists('no-colors', $this->config['options']) ||
@@ -896,7 +902,9 @@ class App implements ExitApp {
             }
         }
 
-        $command->setup()->execute()->tearDown();
+        $command->setup();
+        $command->execute();
+        $command->tearDown();
     }
 
     /**
@@ -904,7 +912,7 @@ class App implements ExitApp {
      *
      * @param int $exitCode Defaults to 0
      */
-    public function close($exitCode = ExitApp::WELL_DONE) {
+    public function close(int $exitCode = ExitApp::WELL_DONE) {
         exit($exitCode);
     }
 

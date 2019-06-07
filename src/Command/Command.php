@@ -22,11 +22,13 @@
  * @link https://github.com/bheisig/cli
  */
 
+declare(strict_types=1);
+
 namespace bheisig\cli\Command;
 
 use \Exception;
-use bheisig\cli\IO;
 use bheisig\cli\Log;
+use bheisig\cli\Service\UserInteraction;
 
 /**
  * Base command
@@ -46,6 +48,11 @@ abstract class Command implements Executes {
      * @var Log
      */
     protected $log;
+
+    /**
+     * @var UserInteraction
+     */
+    protected $userInteraction;
 
     /**
      * UNIX timestamp when execution starts
@@ -68,8 +75,6 @@ abstract class Command implements Executes {
     /**
      * Process some routines before executing command
      *
-     * @return self Returns itself
-     *
      * @throws Exception on error
      */
     public function setup() {
@@ -80,8 +85,6 @@ abstract class Command implements Executes {
 
     /**
      * Process some routines after executing command
-     *
-     * @return self Returns itself
      *
      * @throws Exception on error
      */
@@ -143,7 +146,7 @@ abstract class Command implements Executes {
      *
      * @deprecated Use $this->config['arguments'][0] instead!
      */
-    protected function getQuery() {
+    protected function getQuery(): string {
         $query = '';
 
         foreach ($this->config['args'] as $index => $arg) {
@@ -156,6 +159,21 @@ abstract class Command implements Executes {
         }
 
         return $query;
+    }
+
+    /**
+     * Use service to interact with the user
+     *
+     * @return UserInteraction
+     *
+     * @throws Exception on error
+     */
+    protected function useUserInteraction() {
+        if (!isset($this->userInteraction)) {
+            $this->userInteraction = new UserInteraction($this->config, $this->log);
+        }
+
+        return $this->userInteraction;
     }
 
     /**
@@ -201,7 +219,7 @@ EOF
      *
      * @return string
      */
-    public function getName() {
+    public function getName(): string {
         foreach ($this->config['commands'] as $command => $details) {
             if (strpos($details['class'], get_class($this)) !== false) {
                 return $command;
@@ -216,7 +234,7 @@ EOF
      *
      * @return string
      */
-    public function getDescription() {
+    public function getDescription(): string {
         foreach ($this->config['commands'] as $command => $details) {
             if (strpos($details['class'], get_class($this)) !== false) {
                 return $details['description'];
@@ -224,34 +242,6 @@ EOF
         }
 
         return '';
-    }
-
-    /**
-     * Ask for permission
-     *
-     * @param string $question Question
-     *
-     * @return bool true means yes, false means no
-     *
-     * @throws Exception on error
-     */
-    protected function askForPermission($question) {
-        $answer = strtolower(
-            IO::in($question  . ' [Y|n]:')
-        );
-
-        switch ($answer) {
-            case 'yes':
-            case 'y':
-            case '':
-                return true;
-            case 'no':
-            case 'n':
-                return false;
-            default:
-                $this->log->warning('Excuse me, what do you mean?');
-                return $this->askForPermission($question);
-        }
     }
 
 }
