@@ -9,23 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
--   Add base service with access to configuration and logging
--   Add service to handle YAML
--   Add service to handle user interaction
--   Add service to execute shell commands
+-   `HashMap`: Add methods to manipulate arrays
+-   `Service\Service`: Add base service with access to configuration and logging
+-   `Service\UserInteraction`: Add service to handle user interaction
+-   `Service\Shell`: Add service to execute shell commands
+-   `Service\YAML`: Add service to handle YAML
 
 ### Changed
 
 -   Drop PHP 5.6 support; minimum required version is 7.0
 -   Declare strict types
--   `Command::setup()` returns void
--   `Command::execute()` returns void
--   `Command::tearDown()` returns void
+-   `Command\Executes::setup()`: Switch return statement from self to void
+-   `Command\Executes::execute()`: Switch return statement from self to void
+-   `Command\Executes::tearDown()`: Switch return statement from self to void
 
 ### Fixed
 
--   Print last debug message (spent time, consumed memory etc.) to STDERR
--   Clarify which PHP extensions are required and which ones are suggested
+-   `Command\Command::tearDown()`: Print last debug message (spent time, consumed memory etc.) to STDERR
+-   `composer`: Clarify which PHP extensions are required and which ones are suggested
 
 ## [0.3] – 2019-05-08
 
