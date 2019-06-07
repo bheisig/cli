@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   `Service\Service`: Add base service with access to configuration and logging
 -   `Service\UserInteraction`: Add service to handle user interaction
 -   `Service\Shell`: Add service to execute shell commands
--   `Service\YAML`: Add service to handle YAML
+-   `Service\YAML`: Add service to decode/encode YAML
 
 ### Changed
 

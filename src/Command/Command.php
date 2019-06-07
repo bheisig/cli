@@ -28,7 +28,9 @@ namespace bheisig\cli\Command;
 
 use \Exception;
 use bheisig\cli\Log;
+use bheisig\cli\Service\Shell;
 use bheisig\cli\Service\UserInteraction;
+use bheisig\cli\Service\YAML;
 
 /**
  * Base command
@@ -50,9 +52,19 @@ abstract class Command implements Executes {
     protected $log;
 
     /**
+     * @var Shell
+     */
+    protected $shell;
+
+    /**
      * @var UserInteraction
      */
     protected $userInteraction;
+
+    /**
+     * @var YAML
+     */
+    protected $yaml;
 
     /**
      * UNIX timestamp when execution starts
@@ -162,18 +174,48 @@ abstract class Command implements Executes {
     }
 
     /**
+     * Use service to execute shell commands
+     *
+     * @return Shell
+     *
+     * @throws Exception on error
+     */
+    protected function useShell(): Shell {
+        if (!isset($this->shell)) {
+            $this->shell = new Shell($this->config, $this->log);
+        }
+
+        return $this->shell;
+    }
+
+    /**
      * Use service to interact with the user
      *
      * @return UserInteraction
      *
      * @throws Exception on error
      */
-    protected function useUserInteraction() {
+    protected function useUserInteraction(): UserInteraction {
         if (!isset($this->userInteraction)) {
             $this->userInteraction = new UserInteraction($this->config, $this->log);
         }
 
         return $this->userInteraction;
+    }
+
+    /**
+     * Use service to decode/encode YAML
+     *
+     * @return YAML
+     *
+     * @throws Exception on error
+     */
+    protected function useYAML(): YAML {
+        if (!isset($this->yaml)) {
+            $this->yaml = new YAML($this->config, $this->log);
+        }
+
+        return $this->yaml;
     }
 
     /**

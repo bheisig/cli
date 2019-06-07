@@ -77,7 +77,7 @@ class IO {
      *
      * @throws Exception on error
      */
-    public static function in(string $message, ...$args) {
+    public static function in(string $message, ...$args): string {
         if ($message !== '') {
             if (count($args) > 0) {
                 $message = call_user_func_array(

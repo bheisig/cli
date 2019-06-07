@@ -30,7 +30,7 @@ use \Exception;
 use bheisig\cli\ExitApp;
 
 /**
- * Handle YAML
+ * Decode/encode YAML
  */
 class YAML extends Service {
 
