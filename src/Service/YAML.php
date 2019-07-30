@@ -94,7 +94,7 @@ class YAML extends Service {
     public function read(string $file) {
         // Prevent security problems.
         // See https://www.php.net/manual/en/function.yaml-parse-file.php for more details.
-        ini_set('yaml.decode_php', 0);
+        ini_set('yaml.decode_php', '0');
 
         $result = yaml_parse_file($file);
 
