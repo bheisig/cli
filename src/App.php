@@ -172,7 +172,7 @@ class App implements ExitApp {
     protected function invokeLogging(): self {
         $this->config['log'] = [
             'colorize' => true,
-            'verbosity' => Log::ALL | ~Log::DEBUG
+            'verbosity' => Log::ALL & ~Log::DEBUG
         ];
 
         $this->log = new Log();
