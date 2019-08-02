@@ -547,10 +547,9 @@ class App implements ExitApp {
                         strpos($arg, '--' . $option['long'] . '=') === 0) {
                         break;
                     } elseif ($option['value'] === self::NO_VALUE) {
-                        $index += 1;
                         break;
                     } else {
-                        $index += 2;
+                        $index += 1;
                         break;
                     }
                 }
@@ -564,12 +563,13 @@ class App implements ExitApp {
                         continue;
                     }
 
-                    if ($option['value'] === self::NO_VALUE) {
-                        $index += 1;
-                        break;
-                    } else {
-                        $index += 2;
-                        break;
+                    switch ($option['value']) {
+                        case self::NO_VALUE:
+                            break;
+                        case self::OPTION_REQUIRED:
+                        case self::OPTION_NOT_REQUIRED:
+                            $index += 1;
+                            break;
                     }
                 }
             } else {
