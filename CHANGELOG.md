@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+-   `Log`: Remove unwanted format tags from non-colored output
 -   `App::invokeLogging()`: Fix default log level from invalid value `-1` to `31` (everything but debug)
 -   `Command\Command::tearDown()`: Print last debug message (spent time, consumed memory etc.) to STDERR
 -   `composer`: Clarify which PHP extensions are required and which ones are suggested

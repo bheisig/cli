@@ -387,7 +387,7 @@ class Log {
             '/\<\/([a-z]+)\>/m' => "\033[0m",
         ];
 
-        $replacements = '$1';
+        $replacements = '';
 
         if ($this->colorize) {
             $replacements = $syntax;
