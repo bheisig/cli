@@ -76,7 +76,7 @@ class UserInteraction extends Service {
      *
      * @throws Exception on error
      */
-    public function askYesNo($question) {
+    public function askYesNo($question): bool {
         $answer = strtolower(
             IO::in($question  . ' [Y|n]:')
         );
@@ -110,7 +110,7 @@ class UserInteraction extends Service {
      *
      * @throws Exception on error
      */
-    public function askNoYes($question) {
+    public function askNoYes($question): bool {
         $answer = strtolower(
             IO::in($question  . ' [y|N]:')
         );
@@ -131,6 +131,26 @@ class UserInteraction extends Service {
                 $this->log->warning('Excuse me, what do you mean?');
                 return $this->askNoYes($question);
         }
+    }
+
+    /**
+     * @retun string
+     * @throws Exception on error
+     */
+    public function readPipedInput(): string {
+        $input = '';
+
+        while (true) {
+            $line = IO::in('');
+
+            if ($line === '') {
+                break;
+            }
+
+            $input .= $line;
+        }
+
+        return $input;
     }
 
 }
