@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased][]
 
 ### Added
 
@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   `Command\Command::tearDown()`: Print last debug message (spent time, consumed memory etc.) to STDERR
 -   `composer`: Clarify which PHP extensions are required and which ones are suggested
 
-## [0.3] – 2019-05-08
+## [0.3][] – 2019-05-08
 
 ### Added
 
@@ -45,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Check environment variables for `HOME`, `USER` and `LOCALAPPDATA` first before trying to load configuration files
 
-## [0.2] – 2018-12-17
+## [0.2][] – 2018-12-17
 
 Happy holidays 🎄
 

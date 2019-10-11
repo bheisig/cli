@@ -1,4 +1,4 @@
-#   CLI
+# CLI
 
 PHP Framework for command line interfaces
 
@@ -6,43 +6,38 @@ PHP Framework for command line interfaces
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.6-8892BF.svg)](https://php.net/)
 [![Build Status](https://travis-ci.org/bheisig/cli.svg?branch=master)](https://travis-ci.org/bheisig/cli)
 
-
 ##  About
 
 You want an easy way to build a command line tool written in PHP? You are bored of big, over-engineered frameworks? And last but not least, you do not want to reinvent the wheel? -- Great, this could be the (almost) perfect solution for your next project.
 
 The goal is to build intuitive CLI tools. Nobody likes to read documentation, so make your application self-descriptive!
 
-
 ##  Features
 
-*   Easy-to-install via [Composer](https://getcomposer.org/)
-*   Perfectly suited to create a single binary file from your application
-*   Simple interface
-*   Separate your features by commands
-*   Runs on POSIX-like systems (GNU/Linux, MacOS, …) and Windows
-*   Error/exception handling
-*   Optional colored output based on log level
-*   Log to standard or error output
-*   Pre-defined usage output
-*   JSON-based configuration with defaults, system-wide, user defined and runtime settings
-*   Support for long and short options with optional or required values
-*   Pre-defined options for verbosity/quietness, usage, version information, additional configuration files, runtime settings, configuration test
-*   Verbosity mode outputs human-readable runtime in seconds and peak memory usage
+-   Easy-to-install via [Composer](https://getcomposer.org/)
+-   Perfectly suited to create a single binary file from your application
+-   Simple interface
+-   Separate your features by commands
+-   Runs on POSIX-like systems (GNU/Linux, MacOS, …) and Windows
+-   Error/exception handling
+-   Optional colored output based on log level
+-   Log to standard or error output
+-   Pre-defined usage output
+-   JSON-based configuration with defaults, system-wide, user defined and runtime settings
+-   Support for long and short options with optional or required values
+-   Pre-defined options for verbosity/quietness, usage, version information, additional configuration files, runtime settings, configuration test
+-   Verbosity mode outputs human-readable runtime in seconds and peak memory usage
 
-
-##  Example
+## Example
 
 For a simple application look at the `example/` folder.
 
+## Requirements
 
-##  Requirements
+-   PHP, version 7.1 or higher (7.0 works but is deprecated, 7.3 is recommended, unreleased 7.4 should work)
+-   PHP modules `calendar`, `cli`, `date`, `filter` and `json`
 
-*   PHP, version 5.6 or higher (7.2 is recommended)
-*   PHP modules `calendar`, `cli`, `date`, `filter` and `json`
-
-
-##  Installation
+## Installation
 
 Go to your project folder and require this framework via Composer:
 
@@ -50,8 +45,7 @@ Go to your project folder and require this framework via Composer:
 composer require bheisig/cli
 ~~~
 
-
-##  Update
+## Update
 
 Composer is the way to go:
 
@@ -59,8 +53,7 @@ Composer is the way to go:
 composer update
 ~~~
 
-
-##  Copyright & License
+## Copyright & License
 
 Copyright (C) 2018-19 [Benjamin Heisig](https://benjamin.heisig.name/)
 
