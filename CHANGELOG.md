@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 -   `HashMap`: Add methods to manipulate arrays
+-   `Value`: Add methods to handle strings
 -   `Service\Service`: Add base service with access to configuration and logging
 -   `Service\UserInteraction`: Add service to handle user interaction
 -   `Service\Shell`: Add service to execute shell commands
