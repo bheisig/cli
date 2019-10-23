@@ -44,6 +44,7 @@
         "ext-Phar": "Needed for building binaries",
         "ext-json": "Needed for configuration files",
         "ext-pcntl": "Allows more CLI magic",
+        "ext-posix": "Allows more CLI magic",
         "ext-yaml": "Alternative for configuration files",
         "ext-zlib": "Needed for building compressed binaries",
         "macfja/phar-builder": "Needed for building binaries"
