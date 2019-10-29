@@ -92,7 +92,7 @@ class Init extends Command {
         if (file_exists($configFile)) {
             $this->log->notice('Configuration file already exists.');
 
-            if (!$this->userInteraction->askYesNo('Do you want to overwrite it?')) {
+            if (!$this->useUserInteraction()->askYesNo('Do you want to overwrite it?')) {
                 $this->log->notice('Skipping');
                 return $this;
             }
