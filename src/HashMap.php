@@ -33,11 +33,9 @@ class HashMap {
 
     /**
      * Has a multi-dimensional array all needed keys?
-     *
-     * @param string $needle List of key, for example "inventory.software.os";
+     * @param string $needle List of keys, for example "inventory.software.os";
      * works with indexed arrays as well, for example "0.components.1.title"
      * @param array $haystack Array
-     *
      * @return bool
      */
     public static function hasValue(string $needle, array $haystack): bool {
@@ -70,11 +68,10 @@ class HashMap {
     }
 
     /**
-     * get a value from a multi-dimensional
-     *
-     * @param string $needle List of key, for example "inventory.hardware.nwadapter"; works with indexed arrays as well
+     * Get a value from a multi-dimensional array
+     * @param string $needle List of keys, for example "inventory.software.os";
+     * works with indexed arrays as well, for example "0.components.1.title"
      * @param array $haystack Array
-     *
      * @return mixed|false Returns value, otherwise false
      */
     public static function getValue(string $needle, array $haystack) {
@@ -104,6 +101,59 @@ class HashMap {
                 $haystack[$key]
             );
         }
+    }
+
+    /**
+     * Does a multi-dimensional array contain an array?
+     * @param string $needle List of keys, for example "inventory.software.os";
+     * works with indexed arrays as well, for example "0.components.1.title"
+     * @param array $haystack Array
+     * @return bool
+     */
+    public static function hasArray(string $needle, array $haystack): bool {
+        $value = self::getValue($needle, $haystack);
+
+        return is_array($value);
+    }
+
+    /**
+     * Does a multi-dimensional array contain a string?
+     * @param string $needle List of keys, for example "inventory.software.os";
+     * works with indexed arrays as well, for example "0.components.1.title"
+     * @param array $haystack Array
+     * @return bool
+     */
+    public static function hasString(string $needle, array $haystack): bool {
+        $value = self::getValue($needle, $haystack);
+
+        return is_string($value);
+    }
+
+    /**
+     * Does a multi-dimensional array contain an integer?
+     * @param string $needle List of keys, for example "inventory.software.os";
+     * works with indexed arrays as well, for example "0.components.1.title"
+     * @param array $haystack Array
+     * @return bool
+     */
+    public static function hasInteger(string $needle, array $haystack): bool {
+        $value = self::getValue($needle, $haystack);
+
+        return is_int($value);
+    }
+
+    /**
+     * Does a multi-dimensional array contain a given type?
+     * @param string $needle List of keys, for example "inventory.software.os";
+     * works with indexed arrays as well, for example "0.components.1.title"
+     * @param array $haystack Array
+     * @param string $type Class name (doen't work with primitive types)
+     * @return bool
+     */
+    public static function hasType(string $needle, array $haystack, string $type): bool {
+        $value = self::getValue($needle, $haystack);
+
+        return is_a($value, $type, true);
     }
 
 }
